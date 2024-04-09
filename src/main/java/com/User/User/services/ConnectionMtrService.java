@@ -16,7 +16,7 @@ public class ConnectionMtrService {
     }
     public Mono<Boolean> getNap(Long id_nap){
         assert webClient != null;
-        String url ="http://localhost:8081/api/box/consultBox/"+id_nap;
+        String url ="http://localhost:8081/api/box/consultBox/"+id_nap+"/";
         return webClient.get()
                 .uri(url)
                 .retrieve()
@@ -34,7 +34,7 @@ public class ConnectionMtrService {
         log.info("params:{}",params);
 
         return webClient.post()
-                .uri("http://localhost:8081/api/box/userAssignedPort")
+                .uri("http://localhost:8081/api/box/userAssignedPort/")
                 .bodyValue(params)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.error(new RuntimeException("Error querying router" + response.statusCode())))
@@ -50,7 +50,7 @@ public class ConnectionMtrService {
             log.info("idBox:{}",idBox);
 
            return webClient.post()
-                   .uri("http://localhost:8081/api/box/EditPortNap")
+                   .uri("http://localhost:8081/api/box/EditPortNap/")
                    .bodyValue(nameUser)
                    .retrieve()
                    .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.error(new RuntimeException("Error querying router" + response.statusCode())))
@@ -91,7 +91,7 @@ public class ConnectionMtrService {
         log.info("data client:{}",promotionData);
 
         return  webClient.post()
-                .uri("http://localhost:8081/api/QueriesFromOtherMicroservices/createClientPPPoE")
+                .uri("http://localhost:8081/api/QueriesFromOtherMicroservices/createClientPPPoE/")
                 .bodyValue(promotionData)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, r -> Mono.error(new RuntimeException(("Error query promotion" + r.statusCode()))))
@@ -112,7 +112,7 @@ public class ConnectionMtrService {
         log.info("data client:{}",promotionData);
 
         return  webClient.post()
-                .uri("http://localhost:8081/api/QueriesFromOtherMicroservices/createClientPPPoE")
+                .uri("http://localhost:8081/api/QueriesFromOtherMicroservices/createClientPPPoE/")
                 .bodyValue(promotionData)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, r -> Mono.error(new RuntimeException(("Error query promotion" + r.statusCode()))))
@@ -130,7 +130,7 @@ public class ConnectionMtrService {
         packageChangeData.put("profile",namePackageInternet);
 
         return  webClient.post()
-                .uri("http://localhost:8081/api/QueriesFromOtherMicroservices/packageChangeOfPPPClient")
+                .uri("http://localhost:8081/api/QueriesFromOtherMicroservices/packageChangeOfPPPClient/")
                 .bodyValue(packageChangeData)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, r -> Mono.error(new RuntimeException(("Error query promotion" + r.statusCode()))))
@@ -166,7 +166,7 @@ public class ConnectionMtrService {
         assignPackageClientPPoEData.put("address",address);
 
         return  webClient.post()
-                .uri("http://localhost:8081/api/QueriesFromOtherMicroservices/cutServiceClient")
+                .uri("http://localhost:8081/api/QueriesFromOtherMicroservices/cutServiceClient/")
                 .bodyValue(assignPackageClientPPoEData)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, r -> Mono.error(new RuntimeException(("Error query promotion" + r.statusCode()))))
@@ -181,7 +181,7 @@ public class ConnectionMtrService {
         assignPackageClientPPoEData.put("uploadSpeed",uploadSpeed);
 
         return  webClient.post()
-                .uri("http://localhost:8081/api/QueriesFromOtherMicroservices/cutServiceClient")
+                .uri("http://localhost:8081/api/QueriesFromOtherMicroservices/cutServiceClient/")
                 .bodyValue(assignPackageClientPPoEData)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, r -> Mono.error(new RuntimeException(("Error query promotion" + r.statusCode()))))

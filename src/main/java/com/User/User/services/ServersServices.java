@@ -56,6 +56,7 @@ public class ServersServices {
                 .build();
     }
     public Long createServices(@NotNull ServicesRequest servicesRequest,Long idUser ){
+        log.info( "id user:{} ",idUser);
         Long id_nap = servicesRequest.getCaja_nap();
         Mono<Boolean> IdNap = connectionMtrService.getNap(id_nap);
         Boolean resultGetNap = IdNap.onErrorReturn(false).block();
@@ -65,7 +66,7 @@ public class ServersServices {
         Mono<Boolean> PostPort=connectionMtrService.postPort(nameUser,servicesRequest.getCaja_nap(),servicesRequest.getPort_nap());
         Boolean resultPostPort = PostPort.onErrorReturn(false).block();
 
-
+log.info("infbghbhbuhbo:{}",resultGetNap);
         if (Boolean.TRUE.equals(resultGetNap) && Boolean.TRUE.equals(resultPostPort)){
             Internet internet_package = internetRepository.findById(servicesRequest.getInternetPackage_id())
                     .orElseThrow(() -> new EntityNotFoundException("Internet package  not found with ID: " + servicesRequest.getInternetPackage_id()));

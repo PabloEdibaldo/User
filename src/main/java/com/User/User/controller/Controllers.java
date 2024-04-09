@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/internet/package")
@@ -56,6 +57,7 @@ import java.util.Map;
 }
 
 
+@CrossOrigin(origins = "*")
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -125,6 +127,7 @@ class UserController{
    */
 }
 
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @RestController
 @Transactional
@@ -154,6 +157,9 @@ class PromotionController{
     }
 
 }
+
+
+@CrossOrigin(origins = "*")
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -186,6 +192,7 @@ class BillingController{
             Long userId = userService.createUser(request.getUserRequest());
             //create the service for the user
             Long serviceId = services.createServices(request.getServicesRequest(),userId);
+            log.info("Service id{}",serviceId);
             //create the billing for the user
             Long billingId = billingService.createBilling(request.getBillingRequest(),userId,serviceId);
             //create client PPPoE in switch
@@ -193,7 +200,7 @@ class BillingController{
             String address = serviceRepository.findById(serviceId).get().getIp_admin();
             Long idRouter = serviceRepository.findById(serviceId).get().getIdRouter();
             String password = serviceRepository.findById(serviceId).get().getPassword();
-
+            log.info("error billing{}",billingId);
             if(billingId != null){
                 connectionMtrService.createClientPPPoE(userId,userName,address,idRouter,password).block();
 
@@ -221,6 +228,7 @@ class BillingController{
         billingService.deleteBilling(id);
     }
 }
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @RestController
 @Transactional
@@ -277,6 +285,8 @@ class CreateUserBillingServiceRequest {
 
     // getters and setters
 }
+
+
 
 @RestController
 @Slf4j
