@@ -25,14 +25,14 @@ public class UserViewResponse {
     private Double mora;
     private Double reconnection;
     private LocalDate creationDay;
-
+//------------------------------------
     private String nameClient;
     private String direction;
-    private Servers service;
-    //taxes
-    private int taxes1;
-    private int taxes2;
-    private int taxes3;
+    ///-------------------------------
+    private Long box;
+    private int port;
+    private String nameRouter;
+
 
     private Long promotion;
     private String creationDayTrue;

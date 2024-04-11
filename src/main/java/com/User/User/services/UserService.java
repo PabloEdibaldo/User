@@ -4,11 +4,9 @@ import com.User.User.dto.dtoUsers.UserRequest;
 import com.User.User.dto.dtoUsers.UserResponse;
 import com.User.User.dto.dtoUsers.UserViewResponse;
 import com.User.User.models.Billing;
+import com.User.User.models.Servers;
 import com.User.User.models.User;
-import com.User.User.repository.BillingRepository;
-import com.User.User.repository.InternetRepository;
-import com.User.User.repository.PromotionRepository;
-import com.User.User.repository.UserRepository;
+import com.User.User.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
@@ -30,6 +28,7 @@ public class UserService {
     private final ConnectionMtrService connectionMtrService;
 
     private final BillingRepository billingRepository;
+    private final ServiceRepository serviceRepository;
     public Long createUser(@NonNull UserRequest userRequest) {
         User user = User.builder()
                 .name(userRequest.getName())
@@ -97,8 +96,10 @@ public class UserService {
 
     private UserViewResponse mapToUserResponseN(@NonNull Billing billing) {
         Optional<User> user = userRepository.findById(billing.getUser().getId());
+        Optional<Servers> service = serviceRepository.findById(billing.getService().getId());
 
-        log.info("user:{}",user.get());
+
+
         return UserViewResponse.builder()
                 .id(billing.getId())
                 .type_service(billing.getType_service())
@@ -115,10 +116,16 @@ public class UserService {
                 .creationDayTrue(billing.getCreationDayTrue())
 
                 //-------------------------------------
+
                 .nameClient(user.get().getName())
                 .direction(user.get().getMainDirection())
                 //---------------------------------------
-                .service(billing.getService())
+
+
+                .box(service.get().getCaja_nap())
+                .port(service.get().getPort_nap())
+                .nameRouter(service.get().getRouter())
+                //----------------------------------------
                 .build();
     }
     public List<UserViewResponse> getAllUsersConfigured() {
