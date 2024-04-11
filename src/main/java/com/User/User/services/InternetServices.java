@@ -7,6 +7,7 @@ import com.User.User.models.Internet;
 import com.User.User.repository.InternetRepository;
 
 import com.User.User.services.apiMercadoLible.ConnectionStripe;
+import com.User.User.services.apiMercadoLible.ProductStripe;
 import com.stripe.exception.StripeException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class InternetServices {
     @Autowired
     private final InternetRepository internetRepository;
     private final ConnectionMtrService connectionMtrService;
- private final ConnectionStripe connectionStripe;
+ private final ProductStripe productStripe;
     public List<InternetResponse> getAllInternet(){
         List<Internet> packagesInternet = internetRepository.findAll();
         return packagesInternet.stream().map(this::mapToPackagesResponse).toList();
@@ -60,10 +61,10 @@ public class InternetServices {
     }
 
     public void createPackageInternet(@NonNull InternetRequest internetRequest) throws StripeException {
-        Mono<Boolean> responseCreateProfileService = connectionMtrService.createProfilePPP(internetRequest.getName(),internetRequest.getLowSpeed(),internetRequest.getUploadSpeed());
-        Boolean responsePostProfilePPP = responseCreateProfileService.block();
-
-        if(Boolean.FALSE.equals(responsePostProfilePPP)){
+//        Mono<Boolean> responseCreateProfileService = connectionMtrService.createProfilePPP(internetRequest.getName(),internetRequest.getLowSpeed(),internetRequest.getUploadSpeed());
+//        Boolean responsePostProfilePPP = responseCreateProfileService.block();
+//
+//        if(Boolean.FALSE.equals(responsePostProfilePPP)){
             Internet internet = Internet.builder()
                     .name(internetRequest.getName())
                     .price(internetRequest.getPrice())
@@ -85,10 +86,10 @@ public class InternetServices {
                     .link(internetRequest.getLink())
                     .build();
             internetRepository.save(internet);
-            connectionStripe.createProduct(internet);
+            productStripe.createProduct(internet);
             log.info("Package {} in saved",internet.getId());
-
-        }
+//
+//        }
 
 
     }

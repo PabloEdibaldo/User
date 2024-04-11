@@ -33,4 +33,6 @@ public class User {
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     private List<InvoiceServices> invoiceServices;
+
+    private String idCustomerStripe;
 }

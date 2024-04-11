@@ -37,6 +37,4 @@ public class Servers {
     private String ip_admin;
     private String type_antenna;
 
-
-
 }

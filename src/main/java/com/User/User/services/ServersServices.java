@@ -66,7 +66,7 @@ public class ServersServices {
         Mono<Boolean> PostPort=connectionMtrService.postPort(nameUser,servicesRequest.getCaja_nap(),servicesRequest.getPort_nap());
         Boolean resultPostPort = PostPort.onErrorReturn(false).block();
 
-log.info("infbghbhbuhbo:{}",resultGetNap);
+
         if (Boolean.TRUE.equals(resultGetNap) && Boolean.TRUE.equals(resultPostPort)){
             Internet internet_package = internetRepository.findById(servicesRequest.getInternetPackage_id())
                     .orElseThrow(() -> new EntityNotFoundException("Internet package  not found with ID: " + servicesRequest.getInternetPackage_id()));

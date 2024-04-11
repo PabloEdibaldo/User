@@ -9,11 +9,13 @@ import com.User.User.dto.dtoServices.ServicesRequest;
 import com.User.User.dto.dtoServices.ServicesResponse;
 import com.User.User.dto.dtoUsers.UserRequest;
 import com.User.User.dto.dtoUsers.UserResponse;
+import com.User.User.dto.dtoUsers.UserViewResponse;
 import com.User.User.repository.BillingRepository;
 import com.User.User.repository.ServiceRepository;
 import com.User.User.repository.UserRepository;
 import com.User.User.services.*;
 import com.User.User.services.apiMercadoLible.ConnectionStripe;
+import com.User.User.services.apiMercadoLible.CustomerStripe;
 import com.User.User.services.apiMercadoLible.Webhook;
 import com.stripe.exception.StripeException;
 import jakarta.transaction.Transactional;
@@ -86,6 +88,11 @@ class UserController{
     public void deleteUser(@PathVariable Long id){
         userService.deleteUser(id);
     }
+
+
+    @GetMapping("/getAllUserConfigured")
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserViewResponse>getAllUserConfigured(){return userService.getAllUsersConfigured();}
 
     /*
       @DeleteMapping("/deleteUser/{id}")
@@ -172,8 +179,7 @@ class BillingController{
     private final UserRepository userRepository;
     private final ServiceRepository serviceRepository;
     private final ConnectionMtrService connectionMtrService;
-    private final ConnectionStripe connectionStripe;
-
+    private final CustomerStripe customerStripe;
 
 
     @GetMapping
@@ -205,8 +211,8 @@ class BillingController{
                 connectionMtrService.createClientPPPoE(userId,userName,address,idRouter,password).block();
 
 
-                connectionStripe.createClientStripe(userId);
-                return billingService.createClient(billingId);
+                customerStripe.createClientStripe(userId);
+                return billingService. createClient(billingId);
 
             }
             //return ResponseEntity.ok("Exit operation ");

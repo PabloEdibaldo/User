@@ -1,11 +1,15 @@
 package com.User.User.services;
+import com.User.User.dto.dtoBilling.BillingResponse;
 import com.User.User.dto.dtoUsers.UserRequest;
 import com.User.User.dto.dtoUsers.UserResponse;
+import com.User.User.dto.dtoUsers.UserViewResponse;
 import com.User.User.models.Billing;
 import com.User.User.models.User;
+import com.User.User.repository.BillingRepository;
 import com.User.User.repository.InternetRepository;
 import com.User.User.repository.PromotionRepository;
 import com.User.User.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +28,8 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final ConnectionMtrService connectionMtrService;
+
+    private final BillingRepository billingRepository;
     public Long createUser(@NonNull UserRequest userRequest) {
         User user = User.builder()
                 .name(userRequest.getName())
@@ -88,4 +94,36 @@ public class UserService {
             }
         }
     }
+
+    private UserViewResponse mapToUserResponseN(@NonNull Billing billing) {
+        Optional<User> user = userRepository.findById(billing.getUser().getId());
+
+        log.info("user:{}",user.get());
+        return UserViewResponse.builder()
+                .id(billing.getId())
+                .type_service(billing.getType_service())
+                .payday(billing.getPayday())
+                .invoice_creation(billing.getInvoice_creation())
+                .taxes(billing.getTaxes())
+                .cutoff_date(billing.getCutoff_date())
+                .days_of_tolerance(billing.getDays_of_tolerance())
+                .mora(billing.getMora())
+                .reconnection(billing.getReconnection())
+                .creationDay(billing.getCreationDay())
+                
+                .promotion(billing.getPromotion())
+                .creationDayTrue(billing.getCreationDayTrue())
+
+                //-------------------------------------
+                .nameClient(user.get().getName())
+                .direction(user.get().getDirection())
+                //---------------------------------------
+                .service(billing.getService())
+                .build();
+    }
+    public List<UserViewResponse> getAllUsersConfigured() {
+        List<Billing> billings = billingRepository.findAll();
+        return billings.stream().map(this::mapToUserResponseN).toList();
+    }
+
 }
