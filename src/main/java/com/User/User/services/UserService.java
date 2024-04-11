@@ -33,7 +33,7 @@ public class UserService {
     public Long createUser(@NonNull UserRequest userRequest) {
         User user = User.builder()
                 .name(userRequest.getName())
-                .direction(userRequest.getDirection())
+                .mainDirection(userRequest.getMainDirection())
                 .location(userRequest.getLocation())
                 .phoneNumber(userRequest.getPhoneNumber())
                 .mobilePhoneNumber(userRequest.getMobilePhoneNumber())
@@ -52,7 +52,7 @@ public class UserService {
         return UserResponse.builder()
                 .id(user.getId())
                 .name(user.getName())
-                .direction(user.getDirection())
+                .mainDirection(user.getMainDirection())
                 .location(user.getLocation())
                 .phoneNumber(user.getPhoneNumber())
                 .mobilePhoneNumber(user.getMobilePhoneNumber())
@@ -66,7 +66,7 @@ public class UserService {
             User existingModels = optionalUser.get();
 
             existingModels.setName(userRequest.getName());
-            existingModels.setDirection(userRequest.getDirection());
+            existingModels.setMainDirection(userRequest.getMainDirection());
             existingModels.setLocation(userRequest.getLocation());
             existingModels.setPhoneNumber(userRequest.getPhoneNumber());
             existingModels.setMobilePhoneNumber(userRequest.getMobilePhoneNumber());
@@ -116,7 +116,7 @@ public class UserService {
 
                 //-------------------------------------
                 .nameClient(user.get().getName())
-                .direction(user.get().getDirection())
+                .direction(user.get().getMainDirection())
                 //---------------------------------------
                 .service(billing.getService())
                 .build();

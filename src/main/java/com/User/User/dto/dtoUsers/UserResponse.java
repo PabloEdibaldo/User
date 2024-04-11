@@ -18,7 +18,7 @@ public class UserResponse {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
-    private String direction;
+    private String mainDirection;
     private String location;
     private String phoneNumber;
     private String mobilePhoneNumber;

@@ -18,7 +18,7 @@ public class User {
     private long id;
     @Column(nullable = false)
     private String name;
-    private String direction;
+    private String mainDirection;
     @Column(nullable = false)
     private String location;
     @Column(nullable = false)
