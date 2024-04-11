@@ -104,7 +104,10 @@ public class UserService {
         return UserViewResponse.builder()
                 .id(billing.getId())
                 .type_service(billing.getType_service())
-               
+                
+                .reconnection(billing.getReconnection())
+                .creationDay(billing.getCreationDay())
+
                 .promotion(billing.getPromotion())
                 .creationDayTrue(billing.getCreationDayTrue())
 
