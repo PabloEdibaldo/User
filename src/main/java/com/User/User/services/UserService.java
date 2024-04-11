@@ -4,6 +4,7 @@ import com.User.User.dto.dtoUsers.UserRequest;
 import com.User.User.dto.dtoUsers.UserResponse;
 import com.User.User.dto.dtoUsers.UserViewResponse;
 import com.User.User.models.Billing;
+import com.User.User.models.Internet;
 import com.User.User.models.Servers;
 import com.User.User.models.User;
 import com.User.User.repository.*;
@@ -26,6 +27,7 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final ConnectionMtrService connectionMtrService;
+    private final InternetRepository internetRepository;
 
     private final BillingRepository billingRepository;
     private final ServiceRepository serviceRepository;
@@ -99,19 +101,10 @@ public class UserService {
         Optional<Servers> service = serviceRepository.findById(billing.getService().getId());
 
 
-
         return UserViewResponse.builder()
                 .id(billing.getId())
                 .type_service(billing.getType_service())
-                .payday(billing.getPayday())
-                .invoice_creation(billing.getInvoice_creation())
-                .taxes(billing.getTaxes())
-                .cutoff_date(billing.getCutoff_date())
-                .days_of_tolerance(billing.getDays_of_tolerance())
-                .mora(billing.getMora())
-                .reconnection(billing.getReconnection())
-                .creationDay(billing.getCreationDay())
-
+               
                 .promotion(billing.getPromotion())
                 .creationDayTrue(billing.getCreationDayTrue())
 
@@ -125,6 +118,9 @@ public class UserService {
                 .box(service.get().getCaja_nap())
                 .port(service.get().getPort_nap())
                 .nameRouter(service.get().getRouter())
+                .ip(service.get().getIp_admin())
+                .namePackage(service.get().getInternetPackage().getName())
+
                 //----------------------------------------
                 .build();
     }

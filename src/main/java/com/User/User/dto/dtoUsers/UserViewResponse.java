@@ -32,6 +32,8 @@ public class UserViewResponse {
     private Long box;
     private int port;
     private String nameRouter;
+    private String ip;
+    private String namePackage;
 
 
     private Long promotion;
