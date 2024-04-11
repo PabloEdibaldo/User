@@ -63,7 +63,7 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("api/users/")
 @Transactional
 class UserController{
     private final UserService userService;
@@ -78,19 +78,19 @@ class UserController{
     public void createUser(@RequestBody UserRequest userRequest){
         userService.createUser(userRequest);
     }
-    @PutMapping("/updateUser/{id}")
+    @PutMapping("updateUser/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void updateUser(@PathVariable Long id, @RequestBody UserRequest userRequest){
         userService.updateUser(id,userRequest);
     }
-    @DeleteMapping("/deleteUser/{id}")
+    @DeleteMapping("deleteUser/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable Long id){
         userService.deleteUser(id);
     }
 
 
-    @GetMapping("/getAllUserConfigured")
+    @GetMapping("getAllUserConfigured/")
     @ResponseStatus(HttpStatus.OK)
     public List<UserViewResponse>getAllUserConfigured(){return userService.getAllUsersConfigured();}
 

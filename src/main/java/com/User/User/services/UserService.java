@@ -110,7 +110,7 @@ public class UserService {
                 .mora(billing.getMora())
                 .reconnection(billing.getReconnection())
                 .creationDay(billing.getCreationDay())
-                
+
                 .promotion(billing.getPromotion())
                 .creationDayTrue(billing.getCreationDayTrue())
 
