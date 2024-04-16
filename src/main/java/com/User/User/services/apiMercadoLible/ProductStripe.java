@@ -1,7 +1,7 @@
 package com.User.User.services.apiMercadoLible;
 
 import com.User.User.models.Internet;
-import com.User.User.models.User;
+
 import com.User.User.repository.InternetRepository;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentLink;

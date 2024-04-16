@@ -33,7 +33,7 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/internet/package")
+@RequestMapping("/api/internet/package/")
 @Transactional
  class InternetController {
     private final InternetServices internetServices;
@@ -46,12 +46,12 @@ import java.util.Map;
     @ResponseStatus(HttpStatus.CREATED)
     public void createPackage(@RequestBody InternetRequest internetRequest) throws StripeException {
         internetServices.createPackageInternet(internetRequest);}
-    @PutMapping("/updatePackage/{id}")
+    @PutMapping("updatePackage/{id}/")
     @ResponseStatus(HttpStatus.OK)
     public void updateInternetPackage(@PathVariable Long id, @RequestBody InternetRequest internetRequest){
         internetServices.updateInternet(id,internetRequest);
     }
-    @DeleteMapping("/deletePackage/{id}")
+    @DeleteMapping("deletePackage/{id}/")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePackage(@PathVariable Long id){
         internetServices.deleteInternet(id);

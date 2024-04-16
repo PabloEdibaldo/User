@@ -141,12 +141,11 @@ public class ConnectionMtrService {
 
 
 //-----------------------------------------------------------------------assign package client PPPoE----------------------------------------------------------------
-    public Mono<Boolean> assignPackageClientInternet(Long idRouter,String profile,String address){
-
+    public Mono<Boolean> assignPackageClientInternet(Long idUser,String password){
         Map<String,Object> assignPackageClientPPoEData = new HashMap<>();
-        assignPackageClientPPoEData.put("idRouter",idRouter);
-        assignPackageClientPPoEData.put("profile",profile);
-        assignPackageClientPPoEData.put("address",address);
+        assignPackageClientPPoEData.put("idUser",idUser);
+        assignPackageClientPPoEData.put("password",password);
+
 
         return  webClient.post()
                 .uri("")

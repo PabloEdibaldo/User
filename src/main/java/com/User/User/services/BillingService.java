@@ -29,7 +29,8 @@ public class BillingService {
     private final ServiceRepository serviceRepository;
     private final PromotionRepository promotionRepository;
     private final ConnectionMtrService connectionMtrService;
-    private final InvoiceServicesService invoiceServices;
+    //private final InvoiceServicesService invoiceServices;
+    private final MessengerService messengerService;
 
     //return invoice list
     public List<BillingResponse> getAllBilling() {
@@ -154,30 +155,35 @@ public class BillingService {
 
             if (billing.getPromotion() != null && billing.getPayday() != 0 && billing.getCreationDay() != null) {
                 if (createClientWithPromotionAndSpecificPayDay(billing, today)) {
-                    response.put("Success", "Client created with promotion and specific payment day.");
+                    log.info( "Client created with promotion and specific payment day.");
+                    messengerService.TypeOfSituation(billing,1);
                 } else {
-                    response.put("Error", "Error creating client.");
+                    log.info( "Client created with promotion and specific payment day.");
                 }
 
             } else if (billing.getPromotion() != null) {
                 if (createClientWithPromotionNoSpecificPayDay(billing, today)) {
-                    response.put("Success", "Client created with promotion and no specific payment day.");
+                    log.info("Client created with promotion and no specific payment day.");
+                    messengerService.TypeOfSituation(billing,1);
                 } else {
-                    response.put("Error", "Error creating client.");
+                    log.info("Client created with promotion and no specific payment day.");
                 }
 
             } else if (billing.getCreationDay() != null) {
                 if (createClientNoPromotionWithSpecificPayDay(billing, today)) {
-                    response.put("Success", "Client created without promotion and with specific payment day.");
+                    log.info( "Client created without promotion and with specific payment day.");
+                    messengerService.TypeOfSituation(billing,1);
                 } else {
-                    response.put("Error", "Error creating client.");
+                    log.info( "Client created without promotion and with specific payment day.");
                 }
             } else {
 
                 if (createClientNoPromotionNoSpecificPayDay(billing, today)) {
-                    response.put("Success", "Client created without promotion and without specific payment day.");
+                    log.info("Client created without promotion and without specific payment day.");
+
+                    messengerService.TypeOfSituation(billing,1);
                 } else {
-                    response.put("Error", "Error creating client.");
+                    log.info("Client created without promotion and without specific payment day.");
                 }
             }
 
@@ -249,7 +255,7 @@ public class BillingService {
             }
         }
     }
-    return false;
+    return assignPackageClientInternet(billing);
     }
     private boolean handlePromotionWithoutSpecificPayDay(@NotNull Billing billing , @NotNull LocalDate today, @NotNull Promotion promotion){
         LocalDate promotionEnd = today.plusDays(promotion.getTimePromotion());
@@ -311,9 +317,8 @@ public class BillingService {
     }
     private boolean assignPackageClientInternet(@NotNull Billing billing){
         return Boolean.TRUE.equals(connectionMtrService.assignPackageClientInternet(
-                billing.getService().getIdRouter(),
-                billing.getService().getInternetPackage().getName(),
-                billing.getService().getIp_admin()
+                billing.getUser().getId(),
+                billing.getService().getPassword()
         ).block());
     }
 
