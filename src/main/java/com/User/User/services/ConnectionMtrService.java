@@ -31,7 +31,7 @@ public class ConnectionMtrService {
         params.put("boxNap", idNap);
         params.put("portNumber", port);
         params.put("nameClient", nameUser);
-        log.info("params:{}",params);
+
 
         return webClient.post()
                 .uri("http://localhost:8081/api/box/userAssignedPort/")
@@ -41,6 +41,22 @@ public class ConnectionMtrService {
                 .onStatus(HttpStatusCode::is5xxServerError, response -> Mono.error(new RuntimeException("Error server API" + response.statusCode())))
                 .bodyToMono(Boolean.class);
        }
+    public Mono<Boolean> postIp(String nameUser, Long redIpv4, String ip){
+        // Create a map of parameters
+        Map<String, Object> params = new HashMap<>();
+        params.put("userName", nameUser);
+        params.put("redIpv4", redIpv4);
+        params.put("ip", ip);
+
+
+        return webClient.post()
+                .uri("http://localhost:8081/api/box/userAssignedPort/")
+                .bodyValue(params)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.error(new RuntimeException("Error querying router" + response.statusCode())))
+                .onStatus(HttpStatusCode::is5xxServerError, response -> Mono.error(new RuntimeException("Error server API" + response.statusCode())))
+                .bodyToMono(Boolean.class);
+    }
        //edit port for de client == delete client
        public Mono<Boolean> editPort(String name, Long idBox  ){
             log.info("name:{} id Box:{}",name,idBox);

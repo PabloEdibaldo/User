@@ -210,10 +210,8 @@ class BillingController{
             if(billingId != null){
                 connectionMtrService.createClientPPPoE(userId,userName,address,idRouter,password).block();
 
-
                 customerStripe.createClientStripe(userId);
                 return billingService. createClient(billingId);
-
             }
             //return ResponseEntity.ok("Exit operation ");
         }catch (Exception e){

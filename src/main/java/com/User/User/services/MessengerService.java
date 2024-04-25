@@ -3,7 +3,6 @@ package com.User.User.services;
 import com.User.User.models.Billing;
 import com.User.User.models.Servers;
 import com.User.User.models.User;
-import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,10 +20,16 @@ public class MessengerService {
 
         switch (caseMessage){
             case 1:
-                String requestBodyWelcome = "Bienvenido a SOLIT Hola "+user.getName() + "Nos emociona tenerte como parte de nuestra comunidad! Esperamos";
+                String requestBodyWelcome = "*¡Bienvenido a SOLIT!*" +
+                        "\n"+" *Hola "+user.getName()+"* " +
+                        "\n"+"¡Nos emociona tenerte como parte de nuestra comunidad!" +
+                        "Esperamos que disfrutes de tu conexión a Internet con nosotros. Si tienes alguna pregunta o " +
+                        "ecesitas asistencia, no dudes en ponerte en contacto con nuestro equipo de soporte." +
+                        "Saludos cordiales," +
+                        "\n"+" SOLIT";
+                log.info(requestBodyWelcome);
+                postMessage(requestBodyWelcome, user.getMobilePhoneNumber());
 
-
-                postMessage(requestBodyWelcome, user.getPhoneNumber());
                 break;
 //            case 2:
 //                String requestBodyPayDayReminder = "{ \"messaging_product\": \"whatsapp\"," +

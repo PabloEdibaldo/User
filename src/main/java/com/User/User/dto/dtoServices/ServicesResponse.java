@@ -23,7 +23,7 @@ public class ServicesResponse {
     private String description;
     private Long internetPackage_id;
     private int price;
-    private String type_Ipv4;
+    private Long type_Ipv4;
     private String mac;
     private String ppp_hs;
     private String password;

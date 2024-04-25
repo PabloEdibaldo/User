@@ -60,12 +60,16 @@ public class ServersServices {
         Long id_nap = servicesRequest.getCaja_nap();
         Mono<Boolean> IdNap = connectionMtrService.getNap(id_nap);
         Boolean resultGetNap = IdNap.onErrorReturn(false).block();
-
+//-------------------------------------------------------------------------------
         Optional<User> user =  userRepository.findById(idUser);
         String  nameUser = user.get().getName();
         Mono<Boolean> PostPort=connectionMtrService.postPort(nameUser,servicesRequest.getCaja_nap(),servicesRequest.getPort_nap());
         Boolean resultPostPort = PostPort.onErrorReturn(false).block();
+//--------------------------------------------------------------------------------
 
+        Mono<Boolean> ip=connectionMtrService.postIp(nameUser,servicesRequest.getType_Ipv4(),servicesRequest.getIp_admin());
+        Boolean resultPostIp = ip.onErrorReturn(false).block();
+        //--------------------------------------------------------------------------
 
         if (Boolean.TRUE.equals(resultGetNap) && Boolean.TRUE.equals(resultPostPort)){
             Internet internet_package = internetRepository.findById(servicesRequest.getInternetPackage_id())
