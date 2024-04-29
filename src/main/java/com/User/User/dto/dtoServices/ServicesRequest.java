@@ -16,7 +16,7 @@ public class ServicesRequest {
     private Boolean firewall;
     private Long internetPackage_id;
     private String description;
-    private int price;
+    private Long price;
     private Long type_Ipv4;
     private String mac;
     private String ppp_hs;

@@ -22,7 +22,7 @@ public class ServicesResponse {
     private Boolean firewall;
     private String description;
     private Long internetPackage_id;
-    private int price;
+    private Long price;
     private Long type_Ipv4;
     private String mac;
     private String ppp_hs;

@@ -24,7 +24,7 @@ public class Servers {
     @JoinColumn(name = "internet_package_id", nullable = false)
     private Internet internetPackage;
     private String description;
-    private int price;
+    private Long price;
     private Long type_Ipv4;
     private String mac;
     private String ppp_hs;

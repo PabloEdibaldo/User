@@ -206,12 +206,12 @@ class BillingController{
             String address = serviceRepository.findById(serviceId).get().getIp_admin();
             Long idRouter = serviceRepository.findById(serviceId).get().getIdRouter();
             String password = serviceRepository.findById(serviceId).get().getPassword();
-            log.info("error billing{}",billingId);
+            log.info("billing id:{}",billingId);
             if(billingId != null){
                 connectionMtrService.createClientPPPoE(userId,userName,address,idRouter,password).block();
 
                 customerStripe.createClientStripe(userId);
-                return billingService. createClient(billingId);
+                return billingService.createClient(billingId);
             }
             //return ResponseEntity.ok("Exit operation ");
         }catch (Exception e){
@@ -232,6 +232,11 @@ class BillingController{
         billingService.deleteBilling(id);
     }
 }
+
+
+
+
+
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @RestController
@@ -275,9 +280,6 @@ class ServiceController{
         return connectionMtrService.postPort(name, idNap, port);
     }
 }
-
-
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -289,9 +291,6 @@ class CreateUserBillingServiceRequest {
 
     // getters and setters
 }
-
-
-
 @RestController
 @Slf4j
 @RequestMapping("/api/StripeWebhooks")

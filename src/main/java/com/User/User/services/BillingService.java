@@ -244,7 +244,7 @@ public class BillingService {
     LocalDate paymentDay = timeMonths.withDayOfMonth(billing.getPayday());
 
     if(invoiceDieDate.isEqual(today)){
-        generationBilling(invoiceDieDate,timeMonths,billing.getService().getPrice());
+        //generationBilling(invoiceDieDate,timeMonths,billing.getService().getPrice());
     }else if(invoiceDieDate.isEqual(paymentDay)){
         LocalDate toleranceDays = paymentDay.plusDays(billing.getDays_of_tolerance());
         if(toleranceDays.isEqual(today)){
@@ -265,7 +265,7 @@ public class BillingService {
         int option = calculateOption(today,promotionEnd,timeGenerationBilling,daysTolerance);
         switch (option){
             case 1:
-                generationBilling(timeGenerationBilling,promotionEnd,billing.getService().getPrice());
+                //generationBilling(timeGenerationBilling,promotionEnd,billing.getService().getPrice());
                 return true;
 
             case 2:
@@ -288,7 +288,7 @@ public class BillingService {
         LocalDate daysTolerance = serviceTime.plusDays(billing.getDays_of_tolerance());
 
         if (timeGenerationBilling.isEqual(today)){
-            generationBilling(timeGenerationBilling,serviceTime,billing.getService().getPrice());
+           // generationBilling(timeGenerationBilling,serviceTime,billing.getService().getPrice());
             return true;
         }else if(timeGenerationBilling.isAfter(daysTolerance)){
             if(pay()){
