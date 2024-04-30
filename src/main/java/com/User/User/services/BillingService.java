@@ -62,9 +62,9 @@ public class BillingService {
     public Long createBilling(@NonNull BillingRequest billingRequest, Long userId, Long serviceId) {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + billingRequest.getUserId()));
-        log.info("user:{} ",user);
+        log.info("user:{} ",user.getId());
         Servers service = serviceRepository.findById(serviceId).orElseThrow(() -> new EntityNotFoundException("service  not found with ID: " + billingRequest.getServiceId()));
-        log.info("service:{}",service);
+        log.info("service:{}",service.getId());
         Billing billing = Billing.builder()
                 .type_service(billingRequest.getType_service())
                 .payday(billingRequest.getPayday())
@@ -317,10 +317,7 @@ public class BillingService {
         ).block());
     }
     private boolean assignPackageClientInternet(@NotNull Billing billing){
-        return Boolean.TRUE.equals(connectionMtrService.assignPackageClientInternet(
-                billing.getUser().getId(),
-                billing.getService().getPassword()
-        ).block());
+       return true;
     }
 
     private boolean pay() {

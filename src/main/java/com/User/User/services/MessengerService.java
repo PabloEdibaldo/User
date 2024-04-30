@@ -28,7 +28,7 @@ public class MessengerService {
                         "Saludos cordiales," +
                         "\n"+" SOLIT";
                 log.info(requestBodyWelcome);
-                postMessage(requestBodyWelcome, user.getMobilePhoneNumber());
+                //postMessage(requestBodyWelcome, user.getMobilePhoneNumber());
 
                 break;
 //            case 2:
@@ -63,19 +63,19 @@ public class MessengerService {
         }
     }
 
-    private void postMessage(String requestBody,String number){
-
-
-
-
-
-            //Twilio.init(, AUTH_TOKEN);
-            Message message = Message.creator(
-                    new com.twilio.type.PhoneNumber("whatsapp:+521"+number),
-                    new com.twilio.type.PhoneNumber("whatsapp:+14155238886"),
-                    requestBody).create();
-
-            System.out.println(message.getSid());
-
-    }
+//    private void postMessage(String requestBody,String number){
+//
+//
+//
+//
+//
+//            //Twilio.init(, AUTH_TOKEN);
+//            Message message = Message.creator(
+//                    new com.twilio.type.PhoneNumber("whatsapp:+521"+number),
+//                    new com.twilio.type.PhoneNumber("whatsapp:+14155238886"),
+//                    requestBody).create();
+//
+//            System.out.println(message.getSid());
+//
+//    }
 }

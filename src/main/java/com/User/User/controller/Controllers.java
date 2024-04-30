@@ -205,13 +205,15 @@ class BillingController{
             String password = serviceRepository.findById(serviceId).get().getPassword();
             log.info("billing id:{}",billingId);
             if(billingId != null){
+                log.info("no nnueo nulo:{}",billingId);
                 connectionMtrService.createClientPPPoE(userId,userName,address,idRouter,password).block();
 
                 customerStripe.createClientStripe(userId);
-                return billingService.createClient(billingId);
+                billingService.createClient(billingId);
             }
             //return ResponseEntity.ok("Exit operation ");
         }catch (Exception e){
+            log.info("error:{}",e);
             Response.put("Error", "Error create client");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Response);
         }

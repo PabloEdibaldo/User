@@ -157,19 +157,19 @@ public class ConnectionMtrService {
 
 
 //-----------------------------------------------------------------------assign package client PPPoE----------------------------------------------------------------
-    public Mono<Boolean> assignPackageClientInternet(Long idUser,String password){
+    public Boolean assignPackageClientInternet(Long idUser, String password){
         Map<String,Object> assignPackageClientPPoEData = new HashMap<>();
         assignPackageClientPPoEData.put("idUser",idUser);
         assignPackageClientPPoEData.put("password",password);
+        return Boolean.TRUE;
 
-
-        return  webClient.post()
-                .uri("")
-                .bodyValue(assignPackageClientPPoEData)
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, r -> Mono.error(new RuntimeException(("Error query promotion" + r.statusCode()))))
-                .onStatus(HttpStatusCode::is5xxServerError, r -> Mono.error(new RuntimeException("Error api server" + r.statusCode())))
-                .bodyToMono(Boolean.class);
+//        return  webClient.post()
+//                .uri("")
+//                .bodyValue(assignPackageClientPPoEData)
+//                .retrieve()
+//                .onStatus(HttpStatusCode::is4xxClientError, r -> Mono.error(new RuntimeException(("Error query promotion" + r.statusCode()))))
+//                .onStatus(HttpStatusCode::is5xxServerError, r -> Mono.error(new RuntimeException("Error api server" + r.statusCode())))
+//                .bodyToMono(Boolean.class);
     }
 
     //-----------------------------------------------------------------------assign package client PPPoE----------------------------------------------------------------
