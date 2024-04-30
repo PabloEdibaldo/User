@@ -57,6 +57,7 @@ public class ServersServices {
     }
     public Long createServices(@NotNull ServicesRequest servicesRequest,Long idUser ){
         log.info( "id user:{} ",idUser);
+        log.info("request service:{}",servicesRequest);
         Long id_nap = servicesRequest.getCaja_nap();
         Mono<Boolean> IdNap = connectionMtrService.getNap(id_nap);
         Boolean resultGetNap = IdNap.onErrorReturn(false).block();
