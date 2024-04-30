@@ -186,9 +186,6 @@ class BillingController{
     @ResponseStatus(HttpStatus.OK)
     public List<BillingResponse> getAllBilling(){return billingService.getAllBilling();}
 
-
-
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Map<String, String>> createUserAndBillingAndService(@RequestBody CreateUserBillingServiceRequest request){
@@ -220,6 +217,7 @@ class BillingController{
         }
         return null;
     }
+
 
     @PutMapping("/updateBilling/{id}")
     @ResponseStatus(HttpStatus.OK)

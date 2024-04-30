@@ -62,8 +62,9 @@ public class BillingService {
     public Long createBilling(@NonNull BillingRequest billingRequest, Long userId, Long serviceId) {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + billingRequest.getUserId()));
+        log.info("user:{} ",user);
         Servers service = serviceRepository.findById(serviceId).orElseThrow(() -> new EntityNotFoundException("service  not found with ID: " + billingRequest.getServiceId()));
-
+        log.info("service:{}",service);
         Billing billing = Billing.builder()
                 .type_service(billingRequest.getType_service())
                 .payday(billingRequest.getPayday())
