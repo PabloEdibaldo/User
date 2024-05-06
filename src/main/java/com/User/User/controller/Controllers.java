@@ -10,11 +10,11 @@ import com.User.User.dto.dtoServices.ServicesResponse;
 import com.User.User.dto.dtoUsers.UserRequest;
 import com.User.User.dto.dtoUsers.UserResponse;
 import com.User.User.dto.dtoUsers.UserViewResponse;
+import com.User.User.models.User;
 import com.User.User.repository.BillingRepository;
 import com.User.User.repository.ServiceRepository;
 import com.User.User.repository.UserRepository;
 import com.User.User.services.*;
-import com.User.User.services.apiMercadoLible.ConnectionStripe;
 import com.User.User.services.apiMercadoLible.CustomerStripe;
 import com.User.User.services.apiMercadoLible.Webhook;
 import com.stripe.exception.StripeException;
@@ -94,6 +94,7 @@ class UserController{
     @ResponseStatus(HttpStatus.OK)
     public List<UserViewResponse>getAllUserConfigured(){return userService.getAllUsersConfigured();}
 
+
     /*
       @DeleteMapping("/deleteUser/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -170,7 +171,7 @@ class PromotionController{
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/billing")
+@RequestMapping("/api/billing/")
 @Transactional
 class BillingController{
     private final BillingService billingService;
