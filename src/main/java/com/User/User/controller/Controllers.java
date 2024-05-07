@@ -14,7 +14,7 @@ import com.User.User.repository.BillingRepository;
 import com.User.User.repository.ServiceRepository;
 import com.User.User.repository.UserRepository;
 import com.User.User.services.*;
-import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrService;
+import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrServicePPPoE;
 import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrServiceDHCP;
 import com.User.User.services.apiMercadoLible.CustomerStripe;
 import com.User.User.services.apiMercadoLible.Webhook;
@@ -68,7 +68,7 @@ import java.util.Map;
 class UserController{
     private final UserService userService;
     private final UserRepository userRepository;
-    private final ConnectionMtrService connectionMtrService;
+    private final ConnectionMtrServicePPPoE connectionMtrServicePPPoE;
     private final BillingRepository billingRepository;
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -180,7 +180,7 @@ class BillingController{
     private final UserRepository userRepository;
     private final BillingRepository billingRepository;
     private final ServiceRepository serviceRepository;
-    private final ConnectionMtrService connectionMtrService;
+    private final ConnectionMtrServicePPPoE connectionMtrServicePPPoE;
     private final ConnectionMtrServiceDHCP connectionMtrServiceDHCP;
     private final CustomerStripe customerStripe;
 
@@ -215,7 +215,7 @@ class BillingController{
             if(billingId != null){
                 log.info("no nnueo nulo:{}",billingId);
                 if(typeServer.equals("PPPoE")) {
-                    connectionMtrService.createClientPPPoE(userId,userName,address,idRouter,password).block();
+                    connectionMtrServicePPPoE.createClientPPPoE(userId,userName,address,idRouter,password).block();
                 }else if(typeServer.equals("DHCP")){
                     Map<String,Object> promotionData = new HashMap<>();
 
@@ -261,7 +261,7 @@ class BillingController{
 @RequestMapping("/api/serviceClient")
 class ServiceController{
     private final ServersServices services;
-    private final ConnectionMtrService connectionMtrService;
+    private final ConnectionMtrServicePPPoE connectionMtrServicePPPoE;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -288,13 +288,13 @@ class ServiceController{
     @GetMapping("/consulta/cajanap/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Mono<Boolean> getAllServices(@PathVariable Long id){
-        return connectionMtrService.getNap(id);
+        return connectionMtrServicePPPoE.getNap(id);
     }
 
     @PostMapping("/ingresar/puerto/cliente")
     @ResponseStatus(HttpStatus.OK)
     public Mono<Boolean> postPort(String name, long idNap, int port){
-        return connectionMtrService.postPort(name, idNap, port);
+        return connectionMtrServicePPPoE.postPort(name, idNap, port);
     }
 }
 @Getter

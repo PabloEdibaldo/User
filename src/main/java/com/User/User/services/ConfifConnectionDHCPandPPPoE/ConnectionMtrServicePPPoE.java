@@ -9,9 +9,9 @@ import java.util.Map;
 
 @Slf4j
 @Service
-public class ConnectionMtrService {
+public class ConnectionMtrServicePPPoE {
     private final WebClient webClient;
-    public ConnectionMtrService(WebClient webClient) {
+    public ConnectionMtrServicePPPoE(WebClient webClient) {
         this.webClient = webClient;
     }
     public Mono<Boolean> getNap(Long id_nap){

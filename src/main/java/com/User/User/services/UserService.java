@@ -6,7 +6,7 @@ import com.User.User.models.Billing;
 import com.User.User.models.Servers;
 import com.User.User.models.User;
 import com.User.User.repository.*;
-import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrService;
+import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrServicePPPoE;
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ import java.util.Optional;
 @Transactional
 public class UserService {
     private final UserRepository userRepository;
-    private final ConnectionMtrService connectionMtrService;
+    private final ConnectionMtrServicePPPoE connectionMtrServicePPPoE;
     private final InternetRepository internetRepository;
 
     private final BillingRepository billingRepository;
@@ -83,7 +83,7 @@ public class UserService {
 
         for (Billing billing:billings){
 
-            Mono<Boolean> editPort= connectionMtrService.editPort(optionalUser.get().getName(), billing.getService().getCaja_nap());
+            Mono<Boolean> editPort= connectionMtrServicePPPoE.editPort(optionalUser.get().getName(), billing.getService().getCaja_nap());
             log.info("billing print:{}",editPort);
             Boolean resultEditPort= editPort.onErrorReturn(false).block();
             if(Boolean.TRUE.equals(resultEditPort)){

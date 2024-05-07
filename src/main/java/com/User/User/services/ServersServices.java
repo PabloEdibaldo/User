@@ -8,7 +8,7 @@ import com.User.User.repository.InternetRepository;
 import com.User.User.repository.PromotionRepository;
 import com.User.User.repository.ServiceRepository;
 import com.User.User.repository.UserRepository;
-import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrService;
+import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrServicePPPoE;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ import java.util.Optional;
 public class ServersServices {
     private final ServiceRepository serviceRepository;
     private final InternetRepository internetRepository;
-    private final ConnectionMtrService connectionMtrService;
+    private final ConnectionMtrServicePPPoE connectionMtrServicePPPoE;
     private final UserRepository userRepository;
     private final PromotionRepository promotionRepository;
     public List<ServicesResponse> getAllServices(){
@@ -58,16 +58,16 @@ public class ServersServices {
         log.info( "id user:{} ",idUser);
         log.info("request service:{}",servicesRequest);
         Long id_nap = servicesRequest.getCaja_nap();
-        Mono<Boolean> IdNap = connectionMtrService.getNap(id_nap);
+        Mono<Boolean> IdNap = connectionMtrServicePPPoE.getNap(id_nap);
         Boolean resultGetNap = IdNap.onErrorReturn(false).block();
 //-------------------------------------------------------------------------------
         Optional<User> user =  userRepository.findById(idUser);
         String  nameUser = user.get().getName();
-        Mono<Boolean> PostPort=connectionMtrService.postPort(nameUser,servicesRequest.getCaja_nap(),servicesRequest.getPort_nap());
+        Mono<Boolean> PostPort= connectionMtrServicePPPoE.postPort(nameUser,servicesRequest.getCaja_nap(),servicesRequest.getPort_nap());
         Boolean resultPostPort = PostPort.onErrorReturn(false).block();
 //--------------------------------------------------------------------------------
 
-        Mono<Boolean> ip=connectionMtrService.postIp(nameUser,servicesRequest.getType_Ipv4(),servicesRequest.getIp_admin());
+        Mono<Boolean> ip= connectionMtrServicePPPoE.postIp(nameUser,servicesRequest.getType_Ipv4(),servicesRequest.getIp_admin());
         Boolean resultPostIp = ip.onErrorReturn(false).block();
         //--------------------------------------------------------------------------
 

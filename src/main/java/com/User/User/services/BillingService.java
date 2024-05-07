@@ -3,7 +3,7 @@ import com.User.User.dto.dtoBilling.BillingRequest;
 import com.User.User.dto.dtoBilling.BillingResponse;
 import com.User.User.models.*;
 import com.User.User.repository.*;
-import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrService;
+import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrServicePPPoE;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
@@ -29,7 +29,7 @@ public class BillingService {
     private final UserRepository userRepository;
     private final ServiceRepository serviceRepository;
     private final PromotionRepository promotionRepository;
-    private final ConnectionMtrService connectionMtrService;
+    private final ConnectionMtrServicePPPoE connectionMtrServicePPPoE;
     //private final InvoiceServicesService invoiceServices;
     private final MessengerService messengerService;
 
@@ -201,7 +201,7 @@ public class BillingService {
         Promotion promotion =getPromotionById(billing.getPromotion());
 
         if(promotion != null){
-            Mono<Boolean> responseAssessingPromotion =connectionMtrService.assignPromotion(
+            Mono<Boolean> responseAssessingPromotion = connectionMtrServicePPPoE.assignPromotion(
                     billing.getService().getIdRouter(),
                     promotion.getDescription(),
                     billing.getService().getIp_admin());
@@ -217,7 +217,7 @@ public class BillingService {
         Promotion promotion = getPromotionById(billing.getPromotion());
 
         if(promotion != null){
-            Mono<Boolean> responseAssessingPromotion =connectionMtrService.assignPromotion(
+            Mono<Boolean> responseAssessingPromotion = connectionMtrServicePPPoE.assignPromotion(
                     billing.getService().getIdRouter(),
                     promotion.getDescription(),
                     billing.getService().getIp_admin());
@@ -302,7 +302,7 @@ public class BillingService {
     }
 
     private void cutCustomerService(@NotNull Billing billing){
-        connectionMtrService.cutCustomerService(
+        connectionMtrServicePPPoE.cutCustomerService(
                 billing.getService().getIdRouter(),
                 billing.getUser().getName(),
                 billing.getService().getIp_admin()
@@ -310,7 +310,7 @@ public class BillingService {
 
     }
     private boolean updateClientPackage(@NotNull Billing billing, String descriptionPromotion) {
-        return Boolean.TRUE.equals(connectionMtrService.packageChangeClientPPPoE(
+        return Boolean.TRUE.equals(connectionMtrServicePPPoE.packageChangeClientPPPoE(
                 billing.getService().getIp_admin(),
                 descriptionPromotion,
                 billing.getService().getIdRouter(),

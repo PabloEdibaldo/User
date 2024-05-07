@@ -6,7 +6,7 @@ import com.User.User.dto.dtoInternet.InternetResponse;
 import com.User.User.models.Internet;
 import com.User.User.repository.InternetRepository;
 
-import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrService;
+import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrServicePPPoE;
 import com.User.User.services.apiMercadoLible.ProductStripe;
 import com.stripe.exception.StripeException;
 import lombok.NonNull;
@@ -26,7 +26,7 @@ import java.util.Optional;
 public class InternetServices {
     @Autowired
     private final InternetRepository internetRepository;
-    private final ConnectionMtrService connectionMtrService;
+    private final ConnectionMtrServicePPPoE connectionMtrServicePPPoE;
  private final ProductStripe productStripe;
     public List<InternetResponse> getAllInternet(){
         List<Internet> packagesInternet = internetRepository.findAll();
