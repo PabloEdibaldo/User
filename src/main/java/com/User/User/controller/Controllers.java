@@ -10,11 +10,12 @@ import com.User.User.dto.dtoServices.ServicesResponse;
 import com.User.User.dto.dtoUsers.UserRequest;
 import com.User.User.dto.dtoUsers.UserResponse;
 import com.User.User.dto.dtoUsers.UserViewResponse;
-import com.User.User.models.User;
 import com.User.User.repository.BillingRepository;
 import com.User.User.repository.ServiceRepository;
 import com.User.User.repository.UserRepository;
 import com.User.User.services.*;
+import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrService;
+import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrServiceDHCP;
 import com.User.User.services.apiMercadoLible.CustomerStripe;
 import com.User.User.services.apiMercadoLible.Webhook;
 import com.stripe.exception.StripeException;
@@ -57,7 +58,6 @@ import java.util.Map;
         internetServices.deleteInternet(id);
     }
 }
-
 
 @CrossOrigin(origins = "*")
 @Slf4j
@@ -178,8 +178,10 @@ class BillingController{
     private final ServersServices services;
     private final UserService userService;
     private final UserRepository userRepository;
+    private final BillingRepository billingRepository;
     private final ServiceRepository serviceRepository;
     private final ConnectionMtrService connectionMtrService;
+    private final ConnectionMtrServiceDHCP connectionMtrServiceDHCP;
     private final CustomerStripe customerStripe;
 
 
@@ -204,11 +206,25 @@ class BillingController{
             String address = serviceRepository.findById(serviceId).get().getIp_admin();
             Long idRouter = serviceRepository.findById(serviceId).get().getIdRouter();
             String password = serviceRepository.findById(serviceId).get().getPassword();
+
+            //type server
+            String typeServer = billingRepository.findById(userId).get().getType_service();
+
+
             log.info("billing id:{}",billingId);
             if(billingId != null){
                 log.info("no nnueo nulo:{}",billingId);
-                connectionMtrService.createClientPPPoE(userId,userName,address,idRouter,password).block();
+                if(typeServer.equals("PPPoE")) {
+                    connectionMtrService.createClientPPPoE(userId,userName,address,idRouter,password).block();
+                }else if(typeServer.equals("DHCP")){
+                    Map<String,Object> promotionData = new HashMap<>();
 
+                    promotionData.put("userName",userName);
+                    promotionData.put("address",address);
+                    promotionData.put("idRouter",idRouter);
+                    promotionData.put("userPassword",password);
+                   // connectionMtrServiceDHCP.PostActionDHCP("http://172.16.15.37:8081/api/QueriesFromOtherMicroservicesDHCP/createProfileDHCP",promotionData);
+                }
                 customerStripe.createClientStripe(userId);
                 billingService.createClient(billingId);
             }

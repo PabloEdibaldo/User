@@ -6,7 +6,7 @@ import com.User.User.dto.dtoInternet.InternetResponse;
 import com.User.User.models.Internet;
 import com.User.User.repository.InternetRepository;
 
-import com.User.User.services.apiMercadoLible.ConnectionStripe;
+import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrService;
 import com.User.User.services.apiMercadoLible.ProductStripe;
 import com.stripe.exception.StripeException;
 import lombok.NonNull;
@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
 
 
 import java.util.List;

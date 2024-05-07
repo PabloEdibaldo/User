@@ -1,4 +1,4 @@
-package com.User.User.services;
+package com.User.User.services.ConfifConnectionDHCPandPPPoE;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
@@ -104,7 +104,7 @@ public class ConnectionMtrService {
         promotionData.put("idRouter",idRouter);
         promotionData.put("userPassword",password);
 
-        log.info("data client:{}",promotionData);
+        
 
         return  webClient.post()
                 .uri("http://localhost:8081/api/QueriesFromOtherMicroservices/createClientPPPoE/")

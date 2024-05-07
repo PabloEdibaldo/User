@@ -1,19 +1,16 @@
 package com.User.User.services;
-import com.User.User.dto.dtoBilling.BillingResponse;
 import com.User.User.dto.dtoUsers.UserRequest;
 import com.User.User.dto.dtoUsers.UserResponse;
 import com.User.User.dto.dtoUsers.UserViewResponse;
 import com.User.User.models.Billing;
-import com.User.User.models.Internet;
 import com.User.User.models.Servers;
 import com.User.User.models.User;
 import com.User.User.repository.*;
-import jakarta.persistence.EntityNotFoundException;
+import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrService;
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
