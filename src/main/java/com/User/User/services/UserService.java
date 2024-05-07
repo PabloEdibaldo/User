@@ -79,17 +79,22 @@ public class UserService {
     }
     public void deleteUser(Long id) {
         Optional<User> optionalUser = userRepository.findById(id);
-        List<Billing> billings = optionalUser.get().getInvoice();
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            List<Billing> billings = user.getInvoice();
 
-        for (Billing billing:billings){
-
-            Mono<Boolean> editPort= connectionMtrServicePPPoE.editPort(optionalUser.get().getName(), billing.getService().getCaja_nap());
-            log.info("billing print:{}",editPort);
-            Boolean resultEditPort= editPort.onErrorReturn(false).block();
-            if(Boolean.TRUE.equals(resultEditPort)){
+            for (Billing billing : billings) {
+                Mono<Boolean> editPort = connectionMtrServicePPPoE.editPort(user.getName(), billing.getService().getCaja_nap());
+                log.info("billing print1: {}", editPort);
+                Boolean resultEditPort = editPort.onErrorReturn(false).block();
+                log.info("billing print2: {}", resultEditPort);
+                if (Boolean.TRUE.equals(resultEditPort)) {
                     userRepository.deleteById(id);
-                    log.warn("User with ID {} not found", id);
+                    log.warn("User with ID {} deleted successfully", id);
+                }
             }
+        } else {
+            log.warn("User with ID {} not found", id);
         }
     }
 
