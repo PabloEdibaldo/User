@@ -208,7 +208,9 @@ class BillingController{
             String password = serviceRepository.findById(serviceId).get().getPassword();
 
             //type server
-            String typeServer = billingRepository.findById(userId).get().getType_service();
+            String typeServer = billingRepository.findById(serviceId).get().getType_service();
+
+            log.info(typeServer);
 
 
             log.info("billing id:{}",billingId);
@@ -223,7 +225,7 @@ class BillingController{
                     promotionData.put("address",address);
                     promotionData.put("idRouter",idRouter);
                     promotionData.put("userPassword",password);
-                   // connectionMtrServiceDHCP.PostActionDHCP("http://172.16.15.37:8081/api/QueriesFromOtherMicroservicesDHCP/createProfileDHCP",promotionData);
+                    connectionMtrServiceDHCP.PostActionDHCP("http://172.16.15.37:8081/api/QueriesFromOtherMicroservicesDHCP/createProfileDHCP",promotionData);
                 }
                 customerStripe.createClientStripe(userId);
                 billingService.createClient(billingId);
