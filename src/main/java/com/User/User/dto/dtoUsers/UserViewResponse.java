@@ -26,6 +26,7 @@ public class UserViewResponse {
     private Double reconnection;
     private LocalDate creationDay;
 //------------------------------------
+    private Long idClient;
     private String nameClient;
     private String direction;
     ///-------------------------------

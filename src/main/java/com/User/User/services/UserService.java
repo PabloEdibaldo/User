@@ -114,7 +114,7 @@ public class UserService {
                 .creationDayTrue(billing.getCreationDayTrue())
 
                 //-------------------------------------
-
+                .idClient(user.get().getId())
                 .nameClient(user.get().getName())
                 .direction(user.get().getMainDirection())
                 //---------------------------------------

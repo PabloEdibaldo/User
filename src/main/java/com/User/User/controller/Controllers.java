@@ -224,8 +224,8 @@ class BillingController{
                     promotionData.put("userName",userName);
                     promotionData.put("address",address);
                     promotionData.put("idRouter",idRouter);
-                    promotionData.put("userPassword",password);
-                    connectionMtrServiceDHCP.PostActionDHCP("http://172.16.15.37:8081/api/QueriesFromOtherMicroservicesDHCP/createProfileDHCP",promotionData);
+                    promotionData.put("macAddress",password);
+                    connectionMtrServiceDHCP.PostActionDHCP("http://localhost:8081/api/QueriesFromOtherMicroservicesDHCP/createProfileDHCP",promotionData);
                 }
                 customerStripe.createClientStripe(userId);
                 billingService.createClient(billingId);
