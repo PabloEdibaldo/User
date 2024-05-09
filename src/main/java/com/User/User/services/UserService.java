@@ -6,6 +6,7 @@ import com.User.User.models.Billing;
 import com.User.User.models.Servers;
 import com.User.User.models.User;
 import com.User.User.repository.*;
+import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrServiceDHCP;
 import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrServicePPPoE;
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
@@ -14,7 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -25,7 +28,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final ConnectionMtrServicePPPoE connectionMtrServicePPPoE;
     private final InternetRepository internetRepository;
-
+    private final ConnectionMtrServiceDHCP connectionMtrServiceDHCP;
     private final BillingRepository billingRepository;
     private final ServiceRepository serviceRepository;
     public Long createUser(@NonNull UserRequest userRequest) {
@@ -119,7 +122,7 @@ public class UserService {
                 .direction(user.get().getMainDirection())
                 //---------------------------------------
 
-
+                .password(service.get().getPassword())
                 .box(service.get().getCaja_nap())
                 .port(service.get().getPort_nap())
                 .nameRouter(service.get().getRouter())
@@ -134,6 +137,50 @@ public class UserService {
         return billings.stream().map(this::mapToUserResponseN).toList();
     }
 
+    public  void createClientDHCP(String userName,String address,Long idRouter,String macAddress){
 
+        if(macAddress != null){
+            Map<String,Object> promotionData = new HashMap<>();
 
+            promotionData.put("userName",userName);
+            promotionData.put("address",address);
+            promotionData.put("idRouter",idRouter);
+            promotionData.put("macAddress",macAddress);
+
+            connectionMtrServiceDHCP.PostActionDHCP("http://localhost:8081/api/QueriesFromOtherMicroservicesDHCP/createProfileDHCP/",promotionData);
+
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

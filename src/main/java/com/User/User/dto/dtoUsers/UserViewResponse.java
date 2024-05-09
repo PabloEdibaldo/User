@@ -29,6 +29,8 @@ public class UserViewResponse {
     private Long idClient;
     private String nameClient;
     private String direction;
+
+    private String password;
     ///-------------------------------
     private Long box;
     private int port;

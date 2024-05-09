@@ -181,7 +181,7 @@ class BillingController{
     private final BillingRepository billingRepository;
     private final ServiceRepository serviceRepository;
     private final ConnectionMtrServicePPPoE connectionMtrServicePPPoE;
-    private final ConnectionMtrServiceDHCP connectionMtrServiceDHCP;
+
     private final CustomerStripe customerStripe;
 
 
@@ -206,7 +206,7 @@ class BillingController{
             String address = serviceRepository.findById(serviceId).get().getIp_admin();
             Long idRouter = serviceRepository.findById(serviceId).get().getIdRouter();
             String password = serviceRepository.findById(serviceId).get().getPassword();
-
+            String macAddress = serviceRepository.findById(serviceId).get().getMac();
             //type server
             String typeServer = billingRepository.findById(serviceId).get().getType_service();
 
@@ -219,13 +219,7 @@ class BillingController{
                 if(typeServer.equals("PPPoE")) {
                     connectionMtrServicePPPoE.createClientPPPoE(userId,userName,address,idRouter,password).block();
                 }else if(typeServer.equals("DHCP")){
-                    Map<String,Object> promotionData = new HashMap<>();
-
-                    promotionData.put("userName",userName);
-                    promotionData.put("address",address);
-                    promotionData.put("idRouter",idRouter);
-                    promotionData.put("macAddress",password);
-                    connectionMtrServiceDHCP.PostActionDHCP("http://localhost:8081/api/QueriesFromOtherMicroservicesDHCP/createProfileDHCP/",promotionData);
+                    userService.createClientDHCP(userName,address,idRouter,macAddress);
                 }
                 customerStripe.createClientStripe(userId);
                 billingService.createClient(billingId);
