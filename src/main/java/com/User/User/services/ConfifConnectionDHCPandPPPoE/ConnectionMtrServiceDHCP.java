@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
 public class ConnectionMtrServiceDHCP {
     @Autowired
     private RestTemplate restTemplate;
-    public void PostActionDHCP(String url,Object object ){
+    public Object PostActionDHCP(String url,Object object ){
         HttpEntity<Object> requestEntity = new HttpEntity<>(object);
 
         ResponseEntity<Object> response = restTemplate.exchange(
@@ -21,6 +21,6 @@ public class ConnectionMtrServiceDHCP {
                 Object.class);
 
 
-        //return response.getBody();
+        return response.getBody();
     }
 }

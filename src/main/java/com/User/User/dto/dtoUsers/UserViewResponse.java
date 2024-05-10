@@ -38,6 +38,7 @@ public class UserViewResponse {
     private String ip;
     private String namePackage;
 
+    private Long idService;
 
     private Long promotion;
     private String creationDayTrue;

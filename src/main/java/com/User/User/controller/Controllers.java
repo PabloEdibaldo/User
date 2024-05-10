@@ -7,6 +7,7 @@ import com.User.User.dto.dtoPromotions.PromotionRequest;
 import com.User.User.dto.dtoPromotions.PromotionResponse;
 import com.User.User.dto.dtoServices.ServicesRequest;
 import com.User.User.dto.dtoServices.ServicesResponse;
+import com.User.User.dto.dtoUsers.MacUserAssignRequest;
 import com.User.User.dto.dtoUsers.UserRequest;
 import com.User.User.dto.dtoUsers.UserResponse;
 import com.User.User.dto.dtoUsers.UserViewResponse;
@@ -15,7 +16,6 @@ import com.User.User.repository.ServiceRepository;
 import com.User.User.repository.UserRepository;
 import com.User.User.services.*;
 import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrServicePPPoE;
-import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrServiceDHCP;
 import com.User.User.services.apiMercadoLible.CustomerStripe;
 import com.User.User.services.apiMercadoLible.Webhook;
 import com.stripe.exception.StripeException;
@@ -93,6 +93,12 @@ class UserController{
     @GetMapping("getAllUserConfigured/")
     @ResponseStatus(HttpStatus.OK)
     public List<UserViewResponse>getAllUserConfigured(){return userService.getAllUsersConfigured();}
+
+    @PostMapping("postMac/")
+    @ResponseStatus(HttpStatus.OK)
+    public Object postMac(@RequestBody MacUserAssignRequest macUserAssignRequest){
+        return userService.createClientDHCP(macUserAssignRequest);
+    }
 
 
     /*

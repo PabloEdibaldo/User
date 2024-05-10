@@ -1,4 +1,5 @@
 package com.User.User.services;
+import com.User.User.dto.dtoUsers.MacUserAssignRequest;
 import com.User.User.dto.dtoUsers.UserRequest;
 import com.User.User.dto.dtoUsers.UserResponse;
 import com.User.User.dto.dtoUsers.UserViewResponse;
@@ -31,6 +32,7 @@ public class UserService {
     private final ConnectionMtrServiceDHCP connectionMtrServiceDHCP;
     private final BillingRepository billingRepository;
     private final ServiceRepository serviceRepository;
+
     public Long createUser(@NonNull UserRequest userRequest) {
         User user = User.builder()
                 .name(userRequest.getName())
@@ -44,6 +46,7 @@ public class UserService {
         log.info("User {} in saved", user.getId());
         return user.getId();
     }
+
     public List<UserResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream().map(this::mapToUserResponse).toList();
@@ -60,6 +63,7 @@ public class UserService {
                 .email(user.getEmail())
                 .build();
     }
+
     public void updateUser(Long id, UserRequest userRequest) {
         Optional<User> optionalUser = userRepository.findById(id);
 
@@ -80,6 +84,7 @@ public class UserService {
             log.warn("Router with ID {}  not found", id);
         }
     }
+
     public void deleteUser(Long id) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
@@ -108,8 +113,9 @@ public class UserService {
 
         return UserViewResponse.builder()
                 .id(billing.getId())
+
                 .type_service(billing.getType_service())
-                
+
                 .reconnection(billing.getReconnection())
                 .creationDay(billing.getCreationDay())
 
@@ -129,27 +135,61 @@ public class UserService {
                 .ip(service.get().getIp_admin())
                 .namePackage(service.get().getInternetPackage().getName())
 
+                .idService(service.get().getId())
                 //----------------------------------------
                 .build();
     }
+
     public List<UserViewResponse> getAllUsersConfigured() {
         List<Billing> billings = billingRepository.findAll();
         return billings.stream().map(this::mapToUserResponseN).toList();
     }
 
-    public  void createClientDHCP(String userName,String address,Long idRouter,String macAddress){
+    public Object createClientDHCP(MacUserAssignRequest macUserAssign) {
+        Optional<Servers> service = serviceRepository.findById(macUserAssign.getIdService());
 
-        if(macAddress != null){
-            Map<String,Object> promotionData = new HashMap<>();
+        if(service.isPresent()){
+            Servers  existingServer= service.get();
+            existingServer.setMac(macUserAssign.getMac());
+            serviceRepository.save(existingServer);
 
-            promotionData.put("userName",userName);
-            promotionData.put("address",address);
-            promotionData.put("idRouter",idRouter);
-            promotionData.put("macAddress",macAddress);
-            connectionMtrServiceDHCP.PostActionDHCP("http://localhost:8081/api/QueriesFromOtherMicroservicesDHCP/createProfileDHCP/",promotionData);
+            return assignMac(macUserAssign.getMac(),
+                    macUserAssign.getNameClient(),
+                    service.get().getIp_admin(),
+                    service.get().getIdRouter());
         }
+        return null;
     }
+
+    private Object assignMac(String MAC, String nameClient, String ip, Long idRouter){
+
+        Map<String, Object> promotionData = new HashMap<>();
+
+        promotionData.put("userName", nameClient);
+        promotionData.put("address", ip);
+        promotionData.put("idRouter",idRouter);
+        promotionData.put("macAddress", MAC);
+        return connectionMtrServiceDHCP.PostActionDHCP("http://localhost:8081/api/QueriesFromOtherMicroservicesDHCP/createProfileDHCP/", promotionData);
+
+    }
+
 }
+
+
+
+
+
+
+//  public static void kldfj(){
+//            Map<String, Object> promotionData = new HashMap<>();
+//
+//            promotionData.put("userName", nameClient);
+//            promotionData.put("address", service.get().getIp_admin());
+//            promotionData.put("idRouter", service.get().getIdRouter());
+//            promotionData.put("macAddress", MAC);
+//            connectionMtrServiceDHCP.PostActionDHCP("http://localhost:8081/api/QueriesFromOtherMicroservicesDHCP/createProfileDHCP/", promotionData);
+//
+//        }
 
 
 
