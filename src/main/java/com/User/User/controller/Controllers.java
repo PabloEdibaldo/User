@@ -219,7 +219,9 @@ class BillingController{
                 if(typeServer.equals("PPPoE")) {
                     connectionMtrServicePPPoE.createClientPPPoE(userId,userName,address,idRouter,password).block();
                 }else if(typeServer.equals("DHCP")){
-                    userService.createClientDHCP(userName,address,idRouter,macAddress);
+
+                    log.info("Create DHCP");
+                    //userService.createClientDHCP(userName,address,idRouter,macAddress);
                 }
                 customerStripe.createClientStripe(userId);
                 billingService.createClient(billingId);

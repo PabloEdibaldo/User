@@ -31,6 +31,8 @@ public class User {
     private List<Billing> invoice;
 
 
+
+
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     private List<InvoiceServices> invoiceServices;
 

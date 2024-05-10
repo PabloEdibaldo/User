@@ -1,8 +1,11 @@
 package com.User.User.services.apiMercadoLible;
 
+import com.User.User.services.BillingService;
 import com.google.gson.JsonSyntaxException;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +14,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Slf4j
 @Component
+
 public class Webhook {
+    private final BillingService billingService;
+
+    public Webhook(BillingService billingService) {
+        this.billingService = billingService;
+    }
+
+
     public ResponseEntity<String> handleWebhookEvent(@RequestBody String payload, String sigHeader) {
         Event event;
         try {
@@ -44,6 +55,7 @@ public class Webhook {
                 log.info("Succeeded: " + paymentIntent.getId());
                 log.info("El cliente pagó el valor OXXO antes del vencimiento.-->" +
                         "Entrega de los bienes o servicios que el cliente compró.");
+                billingService.actionWebHook(1);
 
                 break;
             case "payment_intent.payment_failed":
@@ -51,19 +63,23 @@ public class Webhook {
                 log.info("Failed: " + failedPaymentIntent.getId());
                 log.info("El cliente no pagó el valor OXXO antes del vencimiento.-->" +
                         "Contacta al cliente por correo electrónico o envía una notificación push y solicita otro método de pago.");
+                billingService.actionWebHook(2);
                 break;
             case "charge.succeeded":
                 Charge charge = (Charge) stripeObject;
                 log.info("Charge succeeded: " + charge.getId());
+                billingService.actionWebHook(3);
                 break;
             case "payment_intent.requires_action":
                 PaymentIntent requires_action = (PaymentIntent) stripeObject;
                 log.info("El vale OXXO se creó correctamente." +
                         "Espera a que el cliente pague el vale OXXO.");
+                billingService.actionWebHook(4);
                 break;
             case "payment_intent.processing":
                 log.info("El cliente ya no puede pagar el vale OXXO.-->" +
                         "Espera hasta saber si el pago se concreta o no.");
+                billingService.actionWebHook(5);
                 break;
             default:
                 // Handle other event types

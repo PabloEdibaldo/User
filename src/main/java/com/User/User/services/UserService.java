@@ -146,9 +146,7 @@ public class UserService {
             promotionData.put("address",address);
             promotionData.put("idRouter",idRouter);
             promotionData.put("macAddress",macAddress);
-
             connectionMtrServiceDHCP.PostActionDHCP("http://localhost:8081/api/QueriesFromOtherMicroservicesDHCP/createProfileDHCP/",promotionData);
-
         }
     }
 }

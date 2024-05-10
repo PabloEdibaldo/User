@@ -5,7 +5,9 @@ import com.User.User.repository.UserRepository;
 
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
+import com.stripe.model.Invoice;
 import com.stripe.param.CustomerCreateParams;
+import com.stripe.param.InvoiceCreateParams;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,5 +38,13 @@ public class CustomerStripe {
 
             userRepository.save(existingUser);
         }
+    }
+
+    public void createBillingStripeClient(String customer,String subscription) throws StripeException {
+        InvoiceCreateParams params = InvoiceCreateParams.builder()
+                .setCustomer(customer)
+                .setSubscription(subscription)
+                .build();
+        Invoice invoice = Invoice.create(params);
     }
 }
