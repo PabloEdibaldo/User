@@ -147,7 +147,7 @@ public class UserService {
 
     public Object createClientDHCP(MacUserAssignRequest macUserAssign) {
         Optional<Servers> service = serviceRepository.findById(macUserAssign.getIdService());
-
+        log.info("hjdd{}",service.get().getIp_admin());
         if(service.isPresent()){
             Servers  existingServer= service.get();
             existingServer.setMac(macUserAssign.getMac());

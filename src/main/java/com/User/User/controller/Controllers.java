@@ -97,6 +97,7 @@ class UserController{
     @PostMapping("postMac/")
     @ResponseStatus(HttpStatus.OK)
     public Object postMac(@RequestBody MacUserAssignRequest macUserAssignRequest){
+        log.info("mac:{}",macUserAssignRequest);
         return userService.createClientDHCP(macUserAssignRequest);
     }
 
