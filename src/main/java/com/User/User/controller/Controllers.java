@@ -322,7 +322,7 @@ class StripeWebhooks{
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<String> Webhooks(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader){
-        log.info("Webhooks:{}",payload);
+
         return webhook.handleWebhookEvent(payload,sigHeader);
     }
 

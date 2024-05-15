@@ -155,13 +155,8 @@ public class BillingService {
         LocalDate today = LocalDate.now(ZoneId.of("UTC-7"));
         try {
             if (billing.getCreationDay() != null) {
-                if (handleSpecificPayDay(billing, today)) {
-                    //hsghdgh
                     log.info("Client created without promotion and with specific payment day.");
                     messengerService.TypeOfSituation(billing, 1);
-                } else {
-                    log.info("Client created without promotion and with specific payment day.");
-                }
                 return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(response);
             }
         }catch(EntityNotFoundException e){
@@ -173,37 +168,14 @@ public class BillingService {
 
     }
 
-    public boolean handleSpecificPayDay(@NotNull Billing billing, @NotNull LocalDate today){
-    LocalDate timeMonths = today.plusMonths(billing.getCutoff_date());
-    LocalDate invoiceDieDate = timeMonths.minusDays(billing.getInvoice_creation());
-    LocalDate paymentDay = timeMonths.withDayOfMonth(billing.getPayday());
-
-    if(invoiceDieDate.isEqual(today)){
-        generationBilling(invoiceDieDate,timeMonths,billing.getService().getPrice());
-
-    }else if(invoiceDieDate.isEqual(paymentDay)){
-        LocalDate toleranceDays = paymentDay.plusDays(billing.getDays_of_tolerance());
-        if(toleranceDays.isEqual(today)){
-
-        }
-    }
-    return false;
-    }
 
 
-    public void actionWebHook(int numberAction){
 
-        if(numberAction == 1){
-            //enviar m
-        }
+    public void actionWebHookPayCase(int numberAction){
+
+
 
     }
-
-public static void generationBilling(LocalDate invoiceDieDate,LocalDate timeMonths,Long ndd){
-
-}
-
-
 }
 
 
