@@ -55,8 +55,15 @@ public class Webhook {
                 log.info("Succeeded: " + paymentIntent);
                 log.info("El cliente pagó el valor OXXO antes del vencimiento.-->" +
                         "Entrega de los bienes o servicios que el cliente compró.");
+                if(paymentIntent.getPaymentMethodTypes().get(0).equals("card")){
+                    billingService.actionWebHookPayCase(paymentIntent.getLatestCharge(),"card");
+                    log.info("card");
 
-                //billingService.actionWebHookPayCase(paymentIntent.getLatestCharge());
+                }else if(paymentIntent.getPaymentMethodTypes().get(0).equals("oxxo")){
+                    billingService.actionWebHookPayCase(paymentIntent.getLatestCharge(),"oxxo");
+                    log.info("oxxo");
+
+                }
 
                 break;
             case "payment_intent.payment_failed":

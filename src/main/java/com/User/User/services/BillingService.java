@@ -171,7 +171,7 @@ public class BillingService {
 
 
 
-    public void actionWebHookPayCase(int numberAction){
+    public void actionWebHookPayCase(String latestCharge,String typePay){
 
 
 
