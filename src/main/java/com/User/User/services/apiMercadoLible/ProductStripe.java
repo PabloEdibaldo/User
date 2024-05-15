@@ -47,6 +47,10 @@ public class ProductStripe {
                         )
                         .addPaymentMethodType(PaymentLinkCreateParams.PaymentMethodType.OXXO)
                         .addPaymentMethodType(PaymentLinkCreateParams.PaymentMethodType.CARD)
+                        .setPhoneNumberCollection(
+                                PaymentLinkCreateParams.PhoneNumberCollection.builder()
+                                .setEnabled(true).
+                                build())
                         .build();
         PaymentLink paymentLink = PaymentLink.create(paramsLink);
 
