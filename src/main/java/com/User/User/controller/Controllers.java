@@ -321,7 +321,7 @@ class StripeWebhooks{
     private  Webhook webhook;
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> Webhooks(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader){
+    public ResponseEntity<String> Webhooks(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) throws StripeException {
 
         return webhook.handleWebhookEvent(payload,sigHeader);
     }

@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Slf4j
 @Service
 public class MessengerService {
@@ -31,33 +33,25 @@ public class MessengerService {
                 //postMessage(requestBodyWelcome, user.getMobilePhoneNumber());
 
                 break;
-//            case 2:
-//                String requestBodyPayDayReminder = "{ \"messaging_product\": \"whatsapp\"," +
-//                        " \"recipient_type\": \"individual\", " +
-//                        "\"to\": \"52"+user.getMobilePhoneNumber()+"\", " +
-//                        "\"type\": \"text\", " +
-//                        "\"text\": " +
-//                        "{ " +
-//                        "\"preview_url\": false," +
-//                        " \"body\": \" Resivo de facturacion\" " +
-//                        "}" +
-//                        " }";
-//
-//                postMessage(requestBodyPayDayReminder);
-//                break;
-//            case 3:
-//                String requestBodyCut = "{ \"messaging_product\": \"whatsapp\"," +
-//                        " \"recipient_type\": \"individual\", " +
-//                        "\"to\": \"52"+user.getMobilePhoneNumber()+"\", " +
-//                        "\"type\": \"text\", " +
-//                        "\"text\": " +
-//                        "{ " +
-//                        "\"preview_url\": false," +
-//                        " \"body\": \" Corte de internet \" " +
-//                        "}" +
-//                        " }";
-//                postMessage(requestBodyCut);
-//                break;
+            case 2:
+                String requestBodyPayDayReminder = "* Solit  le recuerda su pago*" +
+                        "\n"+
+                        LocalDate.now() +
+                        "Estimado cliente"+user.getName()+
+                        "Estimado cliente, le recordamos que su servicio esta a vencer: "+service.getInternetPackage().getName() +
+                        "Link de pago: "+ service.getInternetPackage().getLink();
+                log.info(requestBodyPayDayReminder);
+
+                //postMessage(requestBodyPayDayReminder);
+                break;
+            case 3:
+                String paymentThanks = "gracias por su pago";
+                log.info(paymentThanks);
+                break;
+            case 4:
+                String cutService= "su servicio sera cortado";
+                log.info(cutService);
+                break;
 
 
         }

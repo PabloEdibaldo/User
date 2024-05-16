@@ -4,6 +4,9 @@ import com.User.User.dto.dtoBilling.BillingResponse;
 import com.User.User.models.*;
 import com.User.User.repository.*;
 import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrServicePPPoE;
+import com.User.User.services.apiMercadoLible.CustomerStripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Charge;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
@@ -18,6 +21,7 @@ import reactor.core.publisher.Mono;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -28,10 +32,10 @@ public class BillingService {
     private final BillingRepository billingRepository;
     private final UserRepository userRepository;
     private final ServiceRepository serviceRepository;
-    private final PromotionRepository promotionRepository;
-    private final ConnectionMtrServicePPPoE connectionMtrServicePPPoE;
-    //private final InvoiceServicesService invoiceServices;
     private final MessengerService messengerService;
+    private final CustomerStripe customerStripe;
+    private final ContentBillingRepository contentBillingRepository;
+
 
     //return invoice list
     public List<BillingResponse> getAllBilling() {
@@ -136,8 +140,6 @@ public class BillingService {
             log.warn("Billing with ID {} not found", id);
         }
     }
-
-
     //----------------------------------------------------------------------------------------------------
     public void calculateBillingCycle() {
         List<Billing> billings = billingRepository.findAll();
@@ -146,41 +148,174 @@ public class BillingService {
         }
     }
 
+    private void createCusBillingObject(Billing billing,LocalDate firstDayOfNextMonth,LocalDate lastDayOfMonth ){
+        ContentBilling contentBilling = ContentBilling.builder()
+                .nameClient(billing.getUser().getName())
+                .packageInternetId(billing.getService().getInternetPackage().getId())
+                .idBilling(billing.getId())
+                .price(billing.getService().getPrice())
+                .paymentType("na")
+                .billingInit(firstDayOfNextMonth)
+                .billingEnd(lastDayOfMonth)
+                .billingCreationBilling(lastDayOfMonth.minusDays(billing.getInvoice_creation()))
+                .billingCreateSystem(LocalDate.now())
+                .directionClient(billing.getUser().getMainDirection())
+                .gmailClient(billing.getUser().getEmail())
+                .packageInternetName(billing.getService().getInternetPackage().getName())
+                .pay(false)
+                .typePay("na")
+                .idClient(billing.getUser().getId())
+                .billingNtp(billing)
+                .build();
+
+        contentBillingRepository.save(contentBilling);
+    }
 
     //------------------------------------------------------------------------------------------------------
-    public ResponseEntity<Map<String, String>> createClient(Long idBilling) {
-
-        Map<String, String> response = new HashMap<>();
+    public void createClient(Long idBilling) {
         Billing billing = billingRepository.findById(idBilling).orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + idBilling));
-        LocalDate today = LocalDate.now(ZoneId.of("UTC-7"));
-        try {
-            if (billing.getCreationDay() != null) {
                     log.info("Client created without promotion and with specific payment day.");
                     messengerService.TypeOfSituation(billing, 1);
-                return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(response);
+
+                    LocalDate firstDayOfNextMonth = LocalDate.now().plusMonths(billing.getCutoff_date()).withDayOfMonth(billing.getCutoff_date());
+                    LocalDate lastDayOfMonth = firstDayOfNextMonth.withDayOfMonth(firstDayOfNextMonth.lengthOfMonth());
+        createCusBillingObject(billing,firstDayOfNextMonth,lastDayOfMonth);
+
+
+    }
+
+    public void sendMessageClientNotPay(){
+
+
+    }
+
+
+
+
+    public void actionWebHookPayCase(String latestCharge,String typePay ) throws StripeException {
+        Charge charge = customerStripe.getAChargeId(latestCharge);
+
+
+        List<ContentBilling> contentBillingPay = contentBillingRepository.findAll()
+                .stream()
+                .filter(contentBilling -> !contentBilling.isPay())
+                .toList();
+
+        for (ContentBilling contentBillingNotPay:contentBillingPay){
+            if(contentBillingNotPay.getBillingCreationBilling().isEqual(LocalDate.now())) {
+                messengerService.TypeOfSituation(contentBillingNotPay.getBillingNtp(), 2);
             }
-        }catch(EntityNotFoundException e){
-            response.put("Error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).contentType(MediaType.APPLICATION_JSON).body(response);
         }
-        return null;
+          updateBilling(charge,typePay,contentBillingPay);
 
 
     }
 
 
 
+    private void updateBilling(Charge charge,String typePay,List<ContentBilling> contentBillingPay){
 
-    public void actionWebHookPayCase(String latestCharge,String typePay){
+        ContentBilling matchingBilling = contentBillingPay.stream()
+                .filter(contentBilling -> contentBilling.getGmailClient().equals(charge.getBillingDetails().getEmail()))
+                .findFirst()
+                .orElse(null);
+
+        Optional<ContentBilling> optionalContentBilling = contentBillingRepository.findById(matchingBilling.getId());
+
+        if(optionalContentBilling.isPresent()){
+            ContentBilling contentBilling1 = optionalContentBilling.get();
+
+            if (charge.getBillingDetails().getPhone().equals(contentBilling1.getBillingNtp().getUser().getMobilePhoneNumber()) &&
+                    charge.getBillingDetails().getEmail().equals(contentBilling1.getGmailClient())) {
+
+                contentBilling1.setPaymentType(typePay);
+                contentBilling1.setPay(true);
+
+                createBilling(
+                        contentBilling1.getBillingInit(),
+                        contentBilling1.getBillingEnd(),
+                        contentBilling1.getBillingCreationBilling(),
+                        contentBilling1.getBillingCreateSystem(),
+                        contentBilling1.getBillingNtp());
+
+                messengerService.TypeOfSituation(contentBilling1.getBillingNtp(),3);
 
 
+            }else{
+                if (LocalDate.now().isAfter(contentBilling1.getBillingEnd())) {
+                    cutService(contentBilling1);
+
+                }
+            }
+        }
+    }
+
+    private void cutService(ContentBilling contentBilling) {
+        sendMessageClientNotPay();
+    }
+
+    private void createBilling(
+            LocalDate billingInit,
+            LocalDate billingEnd,
+            LocalDate BillingCreationBilling,
+            LocalDate billingCreateSystem,
+            Billing contentBilling){
+        LocalDate newFirstDayOfNextMonth = billingInit.plusMonths(contentBilling.getCutoff_date()).withDayOfMonth(contentBilling.getCutoff_date());
+        LocalDate newLastDayOfMonth = newFirstDayOfNextMonth.withDayOfMonth(newFirstDayOfNextMonth.lengthOfMonth());
+
+        createCusBillingObject(contentBilling,newFirstDayOfNextMonth,newLastDayOfMonth);
 
     }
+
+
 }
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+*
+*
+*  List<ContentBilling> contentBilling = contentBillingRepository.findAll()
+                    .stream().
+                    filter(
+                            i -> Objects.equals(
+                                    i.getBillingNtp().getUser().getEmail(),
+                                    charge.getBillingDetails().getEmail()))
+                    .toList();
+
+* */
+
+
+
+/*
+if (charge.getBillingDetails().getPhone().equals(existingBilling.getUser().getMobilePhoneNumber()) &&
+                        charge.getBillingDetails().getEmail().equals(existingBilling.getUser().getEmail())) {
+
+                    charge.getAmount();
+                }
+                * */
 
 
 

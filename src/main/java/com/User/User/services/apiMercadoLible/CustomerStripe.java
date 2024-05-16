@@ -4,6 +4,7 @@ import com.User.User.models.User;
 import com.User.User.repository.UserRepository;
 
 import com.stripe.exception.StripeException;
+import com.stripe.model.Charge;
 import com.stripe.model.Customer;
 import com.stripe.model.Invoice;
 import com.stripe.param.CustomerCreateParams;
@@ -38,6 +39,10 @@ public class CustomerStripe {
 
             userRepository.save(existingUser);
         }
+    }
+
+    public Charge getAChargeId(String ChargeId) throws StripeException {
+        return Charge.retrieve(ChargeId);
     }
 
     public void createBillingStripeClient(String customer,String subscription) throws StripeException {

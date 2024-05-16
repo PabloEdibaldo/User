@@ -3,6 +3,7 @@ package com.User.User.services.apiMercadoLible;
 import com.User.User.services.BillingService;
 import com.google.gson.JsonSyntaxException;
 import com.stripe.exception.SignatureVerificationException;
+import com.stripe.exception.StripeException;
 import com.stripe.model.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -23,7 +24,7 @@ public class Webhook {
     }
 
 
-    public ResponseEntity<String> handleWebhookEvent(@RequestBody String payload, String sigHeader) {
+    public ResponseEntity<String> handleWebhookEvent(@RequestBody String payload, String sigHeader) throws StripeException {
         Event event;
         try {
             String endpointSecret = "whsec_5e7c1d9a261322955f60b18d2f92247cffd125a0ec49a81960ef27324df2c6fe";
@@ -53,8 +54,7 @@ public class Webhook {
             case "payment_intent.succeeded":
                 PaymentIntent paymentIntent = (PaymentIntent) stripeObject;
                 log.info("Succeeded: " + paymentIntent);
-                log.info("El cliente pagó el valor OXXO antes del vencimiento.-->" +
-                        "Entrega de los bienes o servicios que el cliente compró.");
+
                 if(paymentIntent.getPaymentMethodTypes().get(0).equals("card")){
                     billingService.actionWebHookPayCase(paymentIntent.getLatestCharge(),"card");
                     log.info("card");
@@ -62,7 +62,8 @@ public class Webhook {
                 }else if(paymentIntent.getPaymentMethodTypes().get(0).equals("oxxo")){
                     billingService.actionWebHookPayCase(paymentIntent.getLatestCharge(),"oxxo");
                     log.info("oxxo");
-
+                    log.info("El cliente pagó el valor OXXO antes del vencimiento.-->" +
+                            "Entrega de los bienes o servicios que el cliente compró.");
                 }
 
                 break;
