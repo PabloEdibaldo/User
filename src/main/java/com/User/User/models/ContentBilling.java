@@ -34,6 +34,8 @@ public class ContentBilling {
     private String typePay;
     private Long idClient;
 
+    @ManyToOne
+    @JoinColumn(name = "billingNtp_id")
     private Billing billingNtp;
 
 }
