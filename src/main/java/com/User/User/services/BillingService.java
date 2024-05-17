@@ -230,8 +230,11 @@ public class BillingService {
 
         if(optionalContentBilling.isPresent()){
             ContentBilling contentBilling1 = optionalContentBilling.get();
-            log.info("contentBilling1:{}",contentBilling1);
-//
+            log.info("charge.getBillingDetails().getPhone():{}",charge.getBillingDetails().getPhone());
+            log.info("contentBilling1.getBillingNtp().getUser().getMobilePhoneNumber():{}",contentBilling1.getBillingNtp().getUser().getMobilePhoneNumber());
+            log.info("charge.getBillingDetails().getEmail():{}",charge.getBillingDetails().getEmail());
+            log.info("contentBilling1.getGmailClient()):{}",contentBilling1.getGmailClient());
+
 //            if (charge.getBillingDetails().getPhone().equals(contentBilling1.getBillingNtp().getUser().getMobilePhoneNumber()) &&
 //                    charge.getBillingDetails().getEmail().equals(contentBilling1.getGmailClient())) {
 //
