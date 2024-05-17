@@ -202,10 +202,10 @@ public class BillingService {
                 .stream()
                 .filter(contentBilling -> !contentBilling.isPay())
                 .toList();
-        log.info("contentBillingPay:{}",contentBillingPay);
+      
 
         for (ContentBilling contentBillingNotPay:contentBillingPay){
-            log.info("contentBillingNotPay:{}",contentBillingNotPay);
+            log.info("contentBillingNotPay:{}",contentBillingNotPay.getNameClient());
             if(contentBillingNotPay.getBillingCreationBilling().isEqual(LocalDate.now())) {
                 messengerService.TypeOfSituation(contentBillingNotPay.getBillingNtp(), 2);
             }
