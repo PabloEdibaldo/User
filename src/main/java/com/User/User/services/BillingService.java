@@ -224,7 +224,7 @@ public class BillingService {
                 .filter(contentBilling -> contentBilling.getGmailClient().equals(charge.getBillingDetails().getEmail()))
                 .findFirst()
                 .orElse(null);
-//        log.info("matchingBilling.getNameClient():{}",matchingBilling.getNameClient());
+        log.info("matchingBilling.getNameClient():{}",matchingBilling.getNameClient());
 //
 //        Optional<ContentBilling> optionalContentBilling = contentBillingRepository.findById(matchingBilling.getId());
 //
