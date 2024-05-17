@@ -195,15 +195,17 @@ public class BillingService {
 
     public void actionWebHookPayCase(String latestCharge,String typePay ) throws StripeException {
         Charge charge = customerStripe.getAChargeId(latestCharge);
-        log.info("charge:{}",charge);
+
 
 
         List<ContentBilling> contentBillingPay = contentBillingRepository.findAll()
                 .stream()
                 .filter(contentBilling -> !contentBilling.isPay())
                 .toList();
+        log.info("contentBillingPay:{}",contentBillingPay);
 
         for (ContentBilling contentBillingNotPay:contentBillingPay){
+            log.info("contentBillingNotPay:{}",contentBillingNotPay);
             if(contentBillingNotPay.getBillingCreationBilling().isEqual(LocalDate.now())) {
                 messengerService.TypeOfSituation(contentBillingNotPay.getBillingNtp(), 2);
             }
@@ -212,6 +214,7 @@ public class BillingService {
 
 
     }
+
 
 
 
