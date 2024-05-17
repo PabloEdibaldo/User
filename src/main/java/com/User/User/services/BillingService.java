@@ -229,6 +229,7 @@ public class BillingService {
         Optional<ContentBilling> optionalContentBilling = contentBillingRepository.findById(matchingBilling.getId());
 
         if(optionalContentBilling.isPresent()){
+            log.info("charge:{}",charge);
             ContentBilling contentBilling1 = optionalContentBilling.get();
             log.info("charge.getBillingDetails().getPhone():{}",charge.getBillingDetails().getPhone());
             log.info("contentBilling1.getBillingNtp().getUser().getMobilePhoneNumber():{}",contentBilling1.getBillingNtp().getUser().getMobilePhoneNumber());
