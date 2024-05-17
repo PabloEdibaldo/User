@@ -166,6 +166,7 @@ public class BillingService {
                 .typePay("na")
                 .idClient(billing.getUser().getId())
                 .billingNtp(billing)
+                .numberPhoneClient(billing.getUser().getMobilePhoneNumber())
                 .build();
 
         contentBillingRepository.save(contentBilling);

@@ -33,6 +33,7 @@ public class ContentBilling {
     private boolean pay;
     private String typePay;
     private Long idClient;
+    private String numberPhoneClient;
 
     @ManyToOne
     @JoinColumn(name = "billingNtp_id")
