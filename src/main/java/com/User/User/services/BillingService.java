@@ -236,28 +236,27 @@ public class BillingService {
             log.info("charge.getBillingDetails().getEmail():{}",charge.getBillingDetails().getEmail());
             log.info("contentBilling1.getGmailClient()):{}",contentBilling1.getGmailClient());
 
-//            if (charge.getBillingDetails().getPhone().equals(contentBilling1.getBillingNtp().getUser().getMobilePhoneNumber()) &&
-//                    charge.getBillingDetails().getEmail().equals(contentBilling1.getGmailClient())) {
-//
-//                contentBilling1.setPaymentType(typePay);
-//                contentBilling1.setPay(true);
-//
-//                createBilling(
-//                        contentBilling1.getBillingInit(),
-//                        contentBilling1.getBillingEnd(),
-//                        contentBilling1.getBillingCreationBilling(),
-//                        contentBilling1.getBillingCreateSystem(),
-//                        contentBilling1.getBillingNtp());
-//
-//                messengerService.TypeOfSituation(contentBilling1.getBillingNtp(),3);
-//
-//
-//            }else{
-//                if (LocalDate.now().isAfter(contentBilling1.getBillingEnd())) {
-//                    cutService(contentBilling1);
-//
-//                }
-//            }
+            if (charge.getBillingDetails().getEmail().equals(contentBilling1.getGmailClient())&& charge.getStatus().equals("succeeded")) {
+
+                contentBilling1.setPaymentType(typePay);
+                contentBilling1.setPay(true);
+
+                createBilling(
+                        contentBilling1.getBillingInit(),
+                        contentBilling1.getBillingEnd(),
+                        contentBilling1.getBillingCreationBilling(),
+                        contentBilling1.getBillingCreateSystem(),
+                        contentBilling1.getBillingNtp());
+
+                messengerService.TypeOfSituation(contentBilling1.getBillingNtp(),3);
+
+
+            }else{
+                if (LocalDate.now().isAfter(contentBilling1.getBillingEnd())) {
+                    cutService(contentBilling1);
+
+                }
+            }
         }
     }
 
