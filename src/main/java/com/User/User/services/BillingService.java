@@ -195,6 +195,7 @@ public class BillingService {
 
     public void actionWebHookPayCase(String latestCharge,String typePay ) throws StripeException {
         Charge charge = customerStripe.getAChargeId(latestCharge);
+        log.info("charge:{}",charge);
 
 
         List<ContentBilling> contentBillingPay = contentBillingRepository.findAll()
