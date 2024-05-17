@@ -224,36 +224,36 @@ public class BillingService {
                 .filter(contentBilling -> contentBilling.getGmailClient().equals(charge.getBillingDetails().getEmail()))
                 .findFirst()
                 .orElse(null);
-        log.info("matchingBilling.getNameClient():{}",matchingBilling.getNameClient());
-
-        Optional<ContentBilling> optionalContentBilling = contentBillingRepository.findById(matchingBilling.getId());
-
-        if(optionalContentBilling.isPresent()){
-            ContentBilling contentBilling1 = optionalContentBilling.get();
-
-            if (charge.getBillingDetails().getPhone().equals(contentBilling1.getBillingNtp().getUser().getMobilePhoneNumber()) &&
-                    charge.getBillingDetails().getEmail().equals(contentBilling1.getGmailClient())) {
-
-                contentBilling1.setPaymentType(typePay);
-                contentBilling1.setPay(true);
-
-                createBilling(
-                        contentBilling1.getBillingInit(),
-                        contentBilling1.getBillingEnd(),
-                        contentBilling1.getBillingCreationBilling(),
-                        contentBilling1.getBillingCreateSystem(),
-                        contentBilling1.getBillingNtp());
-
-                messengerService.TypeOfSituation(contentBilling1.getBillingNtp(),3);
-
-
-            }else{
-                if (LocalDate.now().isAfter(contentBilling1.getBillingEnd())) {
-                    cutService(contentBilling1);
-
-                }
-            }
-        }
+//        log.info("matchingBilling.getNameClient():{}",matchingBilling.getNameClient());
+//
+//        Optional<ContentBilling> optionalContentBilling = contentBillingRepository.findById(matchingBilling.getId());
+//
+//        if(optionalContentBilling.isPresent()){
+//            ContentBilling contentBilling1 = optionalContentBilling.get();
+//
+//            if (charge.getBillingDetails().getPhone().equals(contentBilling1.getBillingNtp().getUser().getMobilePhoneNumber()) &&
+//                    charge.getBillingDetails().getEmail().equals(contentBilling1.getGmailClient())) {
+//
+//                contentBilling1.setPaymentType(typePay);
+//                contentBilling1.setPay(true);
+//
+//                createBilling(
+//                        contentBilling1.getBillingInit(),
+//                        contentBilling1.getBillingEnd(),
+//                        contentBilling1.getBillingCreationBilling(),
+//                        contentBilling1.getBillingCreateSystem(),
+//                        contentBilling1.getBillingNtp());
+//
+//                messengerService.TypeOfSituation(contentBilling1.getBillingNtp(),3);
+//
+//
+//            }else{
+//                if (LocalDate.now().isAfter(contentBilling1.getBillingEnd())) {
+//                    cutService(contentBilling1);
+//
+//                }
+//            }
+//        }
     }
 
     private void cutService(ContentBilling contentBilling) {
