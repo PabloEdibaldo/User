@@ -224,12 +224,13 @@ public class BillingService {
                 .filter(contentBilling -> contentBilling.getGmailClient().equals(charge.getBillingDetails().getEmail()))
                 .findFirst()
                 .orElse(null);
-        log.info("matchingBilling.getNameClient():{}",matchingBilling.getNameClient());
-//
-//        Optional<ContentBilling> optionalContentBilling = contentBillingRepository.findById(matchingBilling.getId());
-//
-//        if(optionalContentBilling.isPresent()){
-//            ContentBilling contentBilling1 = optionalContentBilling.get();
+
+
+        Optional<ContentBilling> optionalContentBilling = contentBillingRepository.findById(matchingBilling.getId());
+
+        if(optionalContentBilling.isPresent()){
+            ContentBilling contentBilling1 = optionalContentBilling.get();
+            log.info("contentBilling1:{}",contentBilling1);
 //
 //            if (charge.getBillingDetails().getPhone().equals(contentBilling1.getBillingNtp().getUser().getMobilePhoneNumber()) &&
 //                    charge.getBillingDetails().getEmail().equals(contentBilling1.getGmailClient())) {
@@ -253,7 +254,7 @@ public class BillingService {
 //
 //                }
 //            }
-//        }
+        }
     }
 
     private void cutService(ContentBilling contentBilling) {
