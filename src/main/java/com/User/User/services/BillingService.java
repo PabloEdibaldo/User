@@ -140,14 +140,22 @@ public class BillingService {
             log.warn("Billing with ID {} not found", id);
         }
     }
-    //----------------------------------------------------------------------------------------------------
-    public void calculateBillingCycle() {
-        List<Billing> billings = billingRepository.findAll();
-        for (Billing billing : billings) {
 
-        }
+
+    //------------------------------------------------------------------------------------------------------
+    //Method to create client and initial invoice
+    public void createClient(Long idBilling) {
+        Billing billing = billingRepository.findById(idBilling).orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + idBilling));
+
+                    messengerService.TypeOfSituation(billing, 1);
+
+                    LocalDate firstDayOfNextMonth = LocalDate.now().plusMonths(billing.getCutoff_date()).withDayOfMonth(billing.getCutoff_date());
+                    LocalDate lastDayOfMonth = firstDayOfNextMonth.withDayOfMonth(firstDayOfNextMonth.lengthOfMonth());
+        createCusBillingObject(billing,firstDayOfNextMonth,lastDayOfMonth);
+
+
     }
-
+    //Method to create the ContentBilling entity and save it to the database
     private void createCusBillingObject(Billing billing,LocalDate firstDayOfNextMonth,LocalDate lastDayOfMonth ){
         ContentBilling contentBilling = ContentBilling.builder()
                 .nameClient(billing.getUser().getName())
@@ -172,51 +180,16 @@ public class BillingService {
         contentBillingRepository.save(contentBilling);
     }
 
-    //------------------------------------------------------------------------------------------------------
-    public void createClient(Long idBilling) {
-        Billing billing = billingRepository.findById(idBilling).orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + idBilling));
-                    log.info("Client created without promotion and with specific payment day.");
-                    messengerService.TypeOfSituation(billing, 1);
-
-                    LocalDate firstDayOfNextMonth = LocalDate.now().plusMonths(billing.getCutoff_date()).withDayOfMonth(billing.getCutoff_date());
-                    LocalDate lastDayOfMonth = firstDayOfNextMonth.withDayOfMonth(firstDayOfNextMonth.lengthOfMonth());
-        createCusBillingObject(billing,firstDayOfNextMonth,lastDayOfMonth);
-
-
-    }
-
-    public void sendMessageClientNotPay(){
-
-
-    }
-
-
-
-
     public void actionWebHookPayCase(String latestCharge,String typePay ) throws StripeException {
         Charge charge = customerStripe.getAChargeId(latestCharge);
-
-
 
         List<ContentBilling> contentBillingPay = contentBillingRepository.findAll()
                 .stream()
                 .filter(contentBilling -> !contentBilling.isPay())
                 .toList();
 
-
-        for (ContentBilling contentBillingNotPay:contentBillingPay){
-            log.info("contentBillingNotPay:{}",contentBillingNotPay.getNameClient());
-            if(contentBillingNotPay.getBillingCreationBilling().isEqual(LocalDate.now())) {
-                messengerService.TypeOfSituation(contentBillingNotPay.getBillingNtp(), 2);
-            }
-        }
-          updateBilling(charge,typePay,contentBillingPay);
-
-
+        updateBilling(charge,typePay,contentBillingPay);
     }
-
-
-
 
     private void updateBilling(Charge charge,String typePay,List<ContentBilling> contentBillingPay){
 
@@ -225,57 +198,60 @@ public class BillingService {
                 .findFirst()
                 .orElse(null);
 
+        if(matchingBilling != null){
+            Optional<ContentBilling> optionalContentBilling = contentBillingRepository.findById(matchingBilling.getId());
 
-        Optional<ContentBilling> optionalContentBilling = contentBillingRepository.findById(matchingBilling.getId());
+            if(optionalContentBilling.isPresent()){
 
-        if(optionalContentBilling.isPresent()){
-            log.info("charge:{}",charge);
-            ContentBilling contentBilling1 = optionalContentBilling.get();
-            log.info("charge.getBillingDetails().getPhone():{}",charge.getBillingDetails().getPhone());
-            log.info("contentBilling1.getBillingNtp().getUser().getMobilePhoneNumber():{}",contentBilling1.getBillingNtp().getUser().getMobilePhoneNumber());
-            log.info("charge.getBillingDetails().getEmail():{}",charge.getBillingDetails().getEmail());
-            log.info("contentBilling1.getGmailClient()):{}",contentBilling1.getGmailClient());
+                ContentBilling contentBilling1 = optionalContentBilling.get();
+                if (charge.getBillingDetails().getEmail().equals(contentBilling1.getGmailClient())&& charge.getStatus().equals("succeeded")) {
 
-            if (charge.getBillingDetails().getEmail().equals(contentBilling1.getGmailClient())&& charge.getStatus().equals("succeeded")) {
+                    contentBilling1.setPaymentType(typePay);
+                    contentBilling1.setPay(true);
 
-                contentBilling1.setPaymentType(typePay);
-                contentBilling1.setPay(true);
+                    createBilling(contentBilling1);
 
-                createBilling(
-                        contentBilling1.getBillingInit(),
-                        contentBilling1.getBillingEnd(),
-                        contentBilling1.getBillingCreationBilling(),
-                        contentBilling1.getBillingCreateSystem(),
-                        contentBilling1.getBillingNtp());
+                    messengerService.TypeOfSituation(contentBilling1.getBillingNtp(),3);
+                }else{
+                    if (LocalDate.now().isAfter(contentBilling1.getBillingEnd())) {
+                        cutService(contentBilling1);
 
-                messengerService.TypeOfSituation(contentBilling1.getBillingNtp(),3);
-
-
-            }else{
-                if (LocalDate.now().isAfter(contentBilling1.getBillingEnd())) {
-                    cutService(contentBilling1);
-
+                    }
                 }
             }
         }
     }
+    private void createBilling(ContentBilling contentBilling){
+        LocalDate newFirstDayOfNextMonth =contentBilling.getBillingInit().plusMonths(contentBilling.getBillingNtp().getCutoff_date()).withDayOfMonth(contentBilling.getBillingNtp().getCutoff_date());
+        LocalDate newLastDayOfMonth = newFirstDayOfNextMonth.withDayOfMonth(newFirstDayOfNextMonth.lengthOfMonth());
 
+        createCusBillingObject(contentBilling.getBillingNtp(),newFirstDayOfNextMonth,newLastDayOfMonth);
+    }
+    //Method that verifies invoices and sends messages if it is the invoice creation day
+    public void checkBillingAndSendMessages(){
+        List<ContentBilling> contentBillings =contentBillingRepository.findAll();
+        LocalDate today = LocalDate.now();
+
+        contentBillings.forEach(contentBilling -> {
+            if(contentBilling.getBillingCreationBilling().isEqual(today)){
+                messengerService.TypeOfSituation(contentBilling.getBillingNtp(), 2);
+            }
+            if(today.isAfter(contentBilling.getBillingEnd()) && ! contentBilling.isPay()){
+                cutService(contentBilling);
+            }
+        });
+    }
+
+
+    public void sendMessageClientNotPay(){
+
+
+    }
     private void cutService(ContentBilling contentBilling) {
         sendMessageClientNotPay();
     }
 
-    private void createBilling(
-            LocalDate billingInit,
-            LocalDate billingEnd,
-            LocalDate BillingCreationBilling,
-            LocalDate billingCreateSystem,
-            Billing contentBilling){
-        LocalDate newFirstDayOfNextMonth = billingInit.plusMonths(contentBilling.getCutoff_date()).withDayOfMonth(contentBilling.getCutoff_date());
-        LocalDate newLastDayOfMonth = newFirstDayOfNextMonth.withDayOfMonth(newFirstDayOfNextMonth.lengthOfMonth());
 
-        createCusBillingObject(contentBilling,newFirstDayOfNextMonth,newLastDayOfMonth);
-
-    }
 
 
 }
@@ -296,197 +272,6 @@ public class BillingService {
 
 
 
-
-
-
-
-
-
-
-
-/*
-*
-*
-*  List<ContentBilling> contentBilling = contentBillingRepository.findAll()
-                    .stream().
-                    filter(
-                            i -> Objects.equals(
-                                    i.getBillingNtp().getUser().getEmail(),
-                                    charge.getBillingDetails().getEmail()))
-                    .toList();
-
-* */
-
-
-
-/*
-if (charge.getBillingDetails().getPhone().equals(existingBilling.getUser().getMobilePhoneNumber()) &&
-                        charge.getBillingDetails().getEmail().equals(existingBilling.getUser().getEmail())) {
-
-                    charge.getAmount();
-                }
-                * */
-
-
-
-
-//
-//    private boolean createClientWithPromotionAndSpecificPayDay(@NotNull Billing billing, LocalDate today){
-//        Promotion promotion =getPromotionById(billing.getPromotion());
-//
-//        if(promotion != null){
-//            Mono<Boolean> responseAssessingPromotion = connectionMtrServicePPPoE.assignPromotion(
-//                    billing.getService().getIdRouter(),
-//                    promotion.getDescription(),
-//                    billing.getService().getIp_admin());
-//
-//            Boolean  response = responseAssessingPromotion.block();
-//            if(Boolean.TRUE.equals(response)){
-//                return handleSpecificPayDay(billing ,today);
-//            }
-//        }
-//        return false;
-//    }
-//    private boolean createClientWithPromotionNoSpecificPayDay(@NotNull Billing billing, LocalDate today){
-//        Promotion promotion = getPromotionById(billing.getPromotion());
-//
-//        if(promotion != null){
-//            Mono<Boolean> responseAssessingPromotion = connectionMtrServicePPPoE.assignPromotion(
-//                    billing.getService().getIdRouter(),
-//                    promotion.getDescription(),
-//                    billing.getService().getIp_admin());
-//
-//            Boolean  response = responseAssessingPromotion.block();
-//            if(Boolean.TRUE.equals(response)){
-//                return handlePromotionWithoutSpecificPayDay(billing ,today ,promotion);
-//            }
-//        }
-//        return false;
-//    }
-//    private boolean createClientNoPromotionWithSpecificPayDay(Billing billing ,LocalDate today){
-//        return handleSpecificPayDay(billing,today);
-//    }
-//    private boolean createClientNoPromotionNoSpecificPayDay(Billing billing, LocalDate today) {
-//        return handleNoPromotionNoSpecificPayDay(billing, today);
-//    }
-//
-//
-//
-//
-//
-//
-//
-//
-//    public boolean handleSpecificPayDay(@NotNull Billing billing, @NotNull LocalDate today){
-//    LocalDate timeMonths = today.plusMonths(billing.getCutoff_date());
-//    LocalDate invoiceDieDate = timeMonths.minusDays(billing.getInvoice_creation());
-//    LocalDate paymentDay = timeMonths.withDayOfMonth(billing.getPayday());
-//
-//    if(invoiceDieDate.isEqual(today)){
-//        //generationBilling(invoiceDieDate,timeMonths,billing.getService().getPrice());
-//    }else if(invoiceDieDate.isEqual(paymentDay)){
-//        LocalDate toleranceDays = paymentDay.plusDays(billing.getDays_of_tolerance());
-//        if(toleranceDays.isEqual(today)){
-//            if(pay()){
-//                return assignPackageClientInternet(billing);
-//            }else {
-//                cutCustomerService(billing);
-//            }
-//        }
-//    }
-//    return assignPackageClientInternet(billing);
-//    }
-//    private boolean handlePromotionWithoutSpecificPayDay(@NotNull Billing billing , @NotNull LocalDate today, @NotNull Promotion promotion){
-//        LocalDate promotionEnd = today.plusDays(promotion.getTimePromotion());
-//        LocalDate timeGenerationBilling = promotionEnd.minusDays(billing.getInvoice_creation());
-//        LocalDate daysTolerance = promotionEnd.plusDays(billing.getDays_of_tolerance());
-//
-//        int option = calculateOption(today,promotionEnd,timeGenerationBilling,daysTolerance);
-//        switch (option){
-//            case 1:
-//                //generationBilling(timeGenerationBilling,promotionEnd,billing.getService().getPrice());
-//                return true;
-//
-//            case 2:
-//                if(pay()){
-//                    return updateClientPackage(billing,promotion.getDescription());
-//                }else {
-//                    log.info("no payment received");
-//                }
-//                break;
-//            case 3:
-//                cutCustomerService(billing);
-//                break;
-//        }
-//        return false;
-//    }
-//
-//    private boolean handleNoPromotionNoSpecificPayDay(@NotNull Billing billing, @NotNull LocalDate today){
-//        LocalDate serviceTime = today.plusMonths(billing.getCutoff_date());
-//        LocalDate timeGenerationBilling = serviceTime.minusDays(billing.getInvoice_creation());
-//        LocalDate daysTolerance = serviceTime.plusDays(billing.getDays_of_tolerance());
-//
-//        if (timeGenerationBilling.isEqual(today)){
-//           // generationBilling(timeGenerationBilling,serviceTime,billing.getService().getPrice());
-//            return true;
-//        }else if(timeGenerationBilling.isAfter(daysTolerance)){
-//            if(pay()){
-//                return assignPackageClientInternet(billing);
-//            }
-//
-//        }
-//        return false;
-//    }
-//
-//    private void cutCustomerService(@NotNull Billing billing){
-//        connectionMtrServicePPPoE.cutCustomerService(
-//                billing.getService().getIdRouter(),
-//                billing.getUser().getName(),
-//                billing.getService().getIp_admin()
-//        );
-//
-//    }
-//    private boolean updateClientPackage(@NotNull Billing billing, String descriptionPromotion) {
-//        return Boolean.TRUE.equals(connectionMtrServicePPPoE.packageChangeClientPPPoE(
-//                billing.getService().getIp_admin(),
-//                descriptionPromotion,
-//                billing.getService().getIdRouter(),
-//                billing.getService().getInternetPackage().getName()
-//        ).block());
-//    }
-//    private boolean assignPackageClientInternet(@NotNull Billing billing){
-//       return true;
-//    }
-//
-//    private boolean pay() {
-//        return false;
-//    }
-//
-//    private void generationBilling(LocalDate timeGenerationBilling,LocalDate serviceTime,int pricePackage) {
-//        //invoiceServices.createInvoiceService();
-//
-//    }
-//
-//
-//
-//
-//
-//    private int calculateOption(LocalDate today, LocalDate promotionEnd, @NotNull LocalDate timeGenerationBilling, LocalDate daysTolerance) {
-//        if (timeGenerationBilling.isEqual(today)) {
-//            return 1;
-//        } else if (promotionEnd.isEqual(today)) {
-//            if(promotionEnd.isAfter(daysTolerance)){
-//                return pay() ? 2 : 3;
-//            }
-//        }
-//        return 0;
-//    }
-//    private Promotion getPromotionById(Long promotionId) {
-//        return promotionRepository.findById(promotionId)
-//                .orElseThrow(() -> new EntityNotFoundException("Promotion not found with ID: " + promotionId));
-//    }
-//}
-//
 
 
 

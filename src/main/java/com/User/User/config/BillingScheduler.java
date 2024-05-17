@@ -18,7 +18,7 @@ public class BillingScheduler {
 
     @Scheduled(cron = "0 02 11 * * ?")
     public void scheduleCalculateBillingCycle(){
-        billingService.calculateBillingCycle();
+        billingService.checkBillingAndSendMessages();
     }
 }
 
