@@ -11,6 +11,7 @@ import com.User.User.dto.dtoUsers.MacUserAssignRequest;
 import com.User.User.dto.dtoUsers.UserRequest;
 import com.User.User.dto.dtoUsers.UserResponse;
 import com.User.User.dto.dtoUsers.UserViewResponse;
+import com.User.User.models.ContentBilling;
 import com.User.User.repository.BillingRepository;
 import com.User.User.repository.ServiceRepository;
 import com.User.User.repository.UserRepository;
@@ -252,6 +253,12 @@ class BillingController{
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public  void deleteBilling(@PathVariable Long id){
         billingService.deleteBilling(id);
+    }
+
+    @GetMapping("/getContentBilling/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ContentBilling> getContentBilling(@PathVariable Long id){
+        return billingService.consultingBillingId(id);
     }
 }
 

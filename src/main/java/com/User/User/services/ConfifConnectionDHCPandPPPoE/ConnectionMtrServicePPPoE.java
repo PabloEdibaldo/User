@@ -1,7 +1,9 @@
 package com.User.User.services.ConfifConnectionDHCPandPPPoE;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import java.util.HashMap;
@@ -205,6 +207,19 @@ public class ConnectionMtrServicePPPoE {
     }
 
 
+    @Autowired
+    private RestTemplate restTemplate;
+    public Object PostActionPPPoE(String url,Object object ){
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        HttpEntity<Object> requestEntity = new HttpEntity<>(object, headers);
+        ResponseEntity<Object> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                requestEntity,
+                Object.class);
+        return response.getBody();
+    }
 
 
 }

@@ -3,6 +3,7 @@ import com.User.User.dto.dtoBilling.BillingRequest;
 import com.User.User.dto.dtoBilling.BillingResponse;
 import com.User.User.models.*;
 import com.User.User.repository.*;
+import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrServiceDHCP;
 import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrServicePPPoE;
 import com.User.User.services.apiMercadoLible.CustomerStripe;
 import com.stripe.exception.StripeException;
@@ -13,15 +14,10 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
+
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -35,6 +31,9 @@ public class BillingService {
     private final MessengerService messengerService;
     private final CustomerStripe customerStripe;
     private final ContentBillingRepository contentBillingRepository;
+    private final ConnectionMtrServiceDHCP connectionMtrServiceDHCP;
+    private final ConnectionMtrServicePPPoE connectionMtrServicePPPoE;
+
 
 
     //return invoice list
@@ -156,7 +155,7 @@ public class BillingService {
 
     }
     //Method to create the ContentBilling entity and save it to the database
-    private void createCusBillingObject(Billing billing,LocalDate firstDayOfNextMonth,LocalDate lastDayOfMonth ){
+    private void createCusBillingObject(@NotNull Billing billing, LocalDate firstDayOfNextMonth, LocalDate lastDayOfMonth ){
         ContentBilling contentBilling = ContentBilling.builder()
                 .nameClient(billing.getUser().getName())
                 .packageInternetId(billing.getService().getInternetPackage().getId())
@@ -191,7 +190,7 @@ public class BillingService {
         updateBilling(charge,typePay,contentBillingPay);
     }
 
-    private void updateBilling(Charge charge,String typePay,List<ContentBilling> contentBillingPay){
+    private void updateBilling(Charge charge, String typePay, @NotNull List<ContentBilling> contentBillingPay){
 
         ContentBilling matchingBilling = contentBillingPay.stream()
                 .filter(contentBilling -> contentBilling.getGmailClient().equals(charge.getBillingDetails().getEmail()))
@@ -212,16 +211,11 @@ public class BillingService {
                     createBilling(contentBilling1);
 
                     messengerService.TypeOfSituation(contentBilling1.getBillingNtp(),3);
-                }else{
-                    if (LocalDate.now().isAfter(contentBilling1.getBillingEnd())) {
-                        cutService(contentBilling1);
-
-                    }
                 }
             }
         }
     }
-    private void createBilling(ContentBilling contentBilling){
+    private void createBilling(@NotNull ContentBilling contentBilling){
         LocalDate newFirstDayOfNextMonth =contentBilling.getBillingInit().plusMonths(contentBilling.getBillingNtp().getCutoff_date()).withDayOfMonth(contentBilling.getBillingNtp().getCutoff_date());
         LocalDate newLastDayOfMonth = newFirstDayOfNextMonth.withDayOfMonth(newFirstDayOfNextMonth.lengthOfMonth());
 
@@ -243,13 +237,41 @@ public class BillingService {
     }
 
 
-    public void sendMessageClientNotPay(){
 
+    private void cutService(@NotNull ContentBilling contentBilling) {
+        messengerService.TypeOfSituation(contentBilling.getBillingNtp(), 4);
+
+        if(contentBilling.getBillingNtp().getService().equals("PPPoE")){
+            Map<String, Object> ObjectServiceCutPPPoE = new HashMap<>();
+
+            ObjectServiceCutPPPoE.put("remoteAddress", contentBilling.getBillingNtp().getService().getIp_admin());
+            ObjectServiceCutPPPoE.put("idRouter", contentBilling.getBillingNtp().getService().getIdRouter());
+             connectionMtrServicePPPoE.PostActionPPPoE("http://localhost:8081/api/QueriesFromOtherMicroservices/cutServiceClientPPPoE/",ObjectServiceCutPPPoE);
+
+        }else if(contentBilling.getBillingNtp().getService().equals("DHCP")){
+            Map<String, Object> ObjectServiceCutDCHP = new HashMap<>();
+
+            ObjectServiceCutDCHP.put("macAddress", contentBilling.getBillingNtp().getService().getMac());
+            ObjectServiceCutDCHP.put("idRouter", contentBilling.getBillingNtp().getService().getIdRouter());
+            ObjectServiceCutDCHP.put("nameClientDHCP", contentBilling.getNameClient());
+
+            connectionMtrServiceDHCP.PostActionDHCP("http://localhost:8081/api/QueriesFromOtherMicroservicesDHCP/cutServiceClientDHCP/",ObjectServiceCutDCHP);
+
+        }
 
     }
-    private void cutService(ContentBilling contentBilling) {
-        sendMessageClientNotPay();
+
+    public List<ContentBilling> consultingBillingId(Long idUser){
+
+        List<ContentBilling> contentBillingPay = contentBillingRepository.findAll()
+                .stream()
+                .filter(contentBilling -> contentBilling.getIdClient().equals(idUser))
+                .toList();
+        return contentBillingPay;
+
     }
+
+
 
 
 
