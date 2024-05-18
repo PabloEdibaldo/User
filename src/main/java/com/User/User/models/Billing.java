@@ -1,9 +1,12 @@
 package com.User.User.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -46,4 +49,7 @@ public class Billing {
     protected void onCreate(){
         creationDay = LocalDate.now();
     }
+    @JsonManagedReference
+    @OneToMany(mappedBy = "billing", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ContentBilling> contentBillings = new ArrayList<>();
 }

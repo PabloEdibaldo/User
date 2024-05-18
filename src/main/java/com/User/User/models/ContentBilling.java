@@ -1,6 +1,7 @@
 package com.User.User.models;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,7 +36,8 @@ public class ContentBilling {
     private Long idClient;
     private String numberPhoneClient;
 
-    @ManyToOne
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "billingNtp_id")
     private Billing billingNtp;
 
