@@ -1,6 +1,7 @@
 package com.User.User.services;
 import com.User.User.dto.dtoBilling.BillingRequest;
 import com.User.User.dto.dtoBilling.BillingResponse;
+import com.User.User.dto.dtoBilling.ContentBillingResponse;
 import com.User.User.models.*;
 import com.User.User.repository.*;
 import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrServiceDHCP;
@@ -262,16 +263,38 @@ public class BillingService {
 
     }
 
-    public List<Object> consultingBillingId(Long idUser){
+    public List<ContentBillingResponse> consultingBillingId(Long idUser){
         log.info("idUser:{}",idUser);
-        return contentBillingRepository.findAll()
+        List<ContentBilling> contentBillings =  contentBillingRepository.findAll()
                 .stream()
                 .filter(contentBilling -> contentBilling.getIdClient().equals(idUser))
                 .collect(Collectors.toList());
+        return contentBillings.stream().map(this::mapToContentBillingsResponse).toList();
 
 
     }
 
+    private ContentBillingResponse mapToContentBillingsResponse(@NotNull ContentBilling contentBilling) {
+        return ContentBillingResponse.builder()
+                .id(contentBilling.getId())
+                .packageInternetId(contentBilling.getPackageInternetId())
+                .idBilling(contentBilling.getIdBilling())
+                .price(contentBilling.getPrice())
+                .paymentType(contentBilling.getPaymentType())
+                .billingInit(contentBilling.getBillingInit())
+                .billingEnd(contentBilling.getBillingEnd())
+                .billingCreationBilling(contentBilling.getBillingCreationBilling())
+                .billingCreateSystem(contentBilling.getBillingCreateSystem())
+                .directionClient(contentBilling.getDirectionClient())
+                .gmailClient(contentBilling.getGmailClient())
+                .packageInternetName(contentBilling.getPackageInternetName())
+                .pay(contentBilling.isPay())
+                .typePay(contentBilling.getTypePay())
+                .idClient(contentBilling.getIdClient())
+                .numberPhoneClient(contentBilling.getNumberPhoneClient())
+                .billingNtp(contentBilling.getBillingNtp())
+                .build();
+    }
 
 
 

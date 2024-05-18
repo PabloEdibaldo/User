@@ -257,7 +257,7 @@ class BillingController{
 
     @GetMapping("/getContentBilling/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public List<Object> getContentBilling(@PathVariable Long id){
+    public List<ContentBilling> getContentBilling(@PathVariable Long id){
         log.info("id:{}",id);
         return billingService.consultingBillingId(id);
     }
