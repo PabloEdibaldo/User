@@ -1,6 +1,7 @@
 package com.User.User.controller;
 import com.User.User.dto.dtoBilling.BillingRequest;
 import com.User.User.dto.dtoBilling.BillingResponse;
+import com.User.User.dto.dtoBilling.ContentBillingResponse;
 import com.User.User.dto.dtoInternet.InternetRequest;
 import com.User.User.dto.dtoInternet.InternetResponse;
 import com.User.User.dto.dtoPromotions.PromotionRequest;
@@ -11,7 +12,6 @@ import com.User.User.dto.dtoUsers.MacUserAssignRequest;
 import com.User.User.dto.dtoUsers.UserRequest;
 import com.User.User.dto.dtoUsers.UserResponse;
 import com.User.User.dto.dtoUsers.UserViewResponse;
-import com.User.User.models.ContentBilling;
 import com.User.User.repository.BillingRepository;
 import com.User.User.repository.ServiceRepository;
 import com.User.User.repository.UserRepository;
@@ -257,7 +257,7 @@ class BillingController{
 
     @GetMapping("/getContentBilling/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public List<ContentBilling> getContentBilling(@PathVariable Long id){
+    public List<ContentBillingResponse> getContentBilling(@PathVariable Long id){
         log.info("id:{}",id);
         return billingService.consultingBillingId(id);
     }
