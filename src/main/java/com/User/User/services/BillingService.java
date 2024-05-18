@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -262,12 +263,12 @@ public class BillingService {
     }
 
     public List<ContentBilling> consultingBillingId(Long idUser){
-
-        List<ContentBilling> contentBillingPay = contentBillingRepository.findAll()
+        log.info("idUser:{}",idUser);
+        return contentBillingRepository.findAll()
                 .stream()
                 .filter(contentBilling -> contentBilling.getIdClient().equals(idUser))
-                .toList();
-        return contentBillingPay;
+                .collect(Collectors.toList());
+
 
     }
 
