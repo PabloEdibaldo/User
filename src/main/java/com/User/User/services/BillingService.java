@@ -262,7 +262,7 @@ public class BillingService {
 
     }
 
-    public List<ContentBilling> consultingBillingId(Long idUser){
+    public List<Object> consultingBillingId(Long idUser){
         log.info("idUser:{}",idUser);
         return contentBillingRepository.findAll()
                 .stream()
