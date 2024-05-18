@@ -36,7 +36,7 @@ public class ContentBilling {
     private Long idClient;
     private String numberPhoneClient;
 
-    @JsonBackReference
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "billingNtp_id")
     private Billing billingNtp;
