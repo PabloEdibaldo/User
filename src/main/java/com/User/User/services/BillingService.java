@@ -292,7 +292,6 @@ public class BillingService {
                 .typePay(contentBilling.getTypePay())
                 .idClient(contentBilling.getIdClient())
                 .numberPhoneClient(contentBilling.getNumberPhoneClient())
-                .billingNtp(contentBilling.getBillingNtp())
                 .build();
     }
 
