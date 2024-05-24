@@ -63,7 +63,8 @@ public class ServersServices {
 //-------------------------------------------------------------------------------
         Optional<User> user =  userRepository.findById(idUser);
         String  nameUser = user.get().getName();
-        Mono<Boolean> PostPort= connectionMtrServicePPPoE.postPort(nameUser,servicesRequest.getCaja_nap(),servicesRequest.getPort_nap());
+        Long idClient = user.get().getId();
+        Mono<Boolean> PostPort= connectionMtrServicePPPoE.postPort(nameUser,servicesRequest.getCaja_nap(),servicesRequest.getPort_nap(),idClient);
         Boolean resultPostPort = PostPort.onErrorReturn(false).block();
 //--------------------------------------------------------------------------------
 

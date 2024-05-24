@@ -87,6 +87,7 @@ public class BillingService {
                 .user(user)
                 .service(service)
                 .creationDayTrue(billingRequest.getCreationDayTrue())
+
                 .build();
 
         billingRepository.save(billing);
@@ -143,7 +144,7 @@ public class BillingService {
     }
 
 
-    //------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------------------------------------------------------------------------------
     //Method to create client and initial invoice
     public void createClient(Long idBilling) {
         Billing billing = billingRepository.findById(idBilling).orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + idBilling));
@@ -152,12 +153,10 @@ public class BillingService {
 
                     LocalDate firstDayOfNextMonth = LocalDate.now().plusMonths(billing.getCutoff_date()).withDayOfMonth(billing.getCutoff_date());
                     LocalDate lastDayOfMonth = firstDayOfNextMonth.withDayOfMonth(firstDayOfNextMonth.lengthOfMonth());
-        createCusBillingObject(billing,firstDayOfNextMonth,lastDayOfMonth);
-
-
+        createCusBillingObject(billing,firstDayOfNextMonth,lastDayOfMonth,"na");
     }
     //Method to create the ContentBilling entity and save it to the database
-    private void createCusBillingObject(@NotNull Billing billing, LocalDate firstDayOfNextMonth, LocalDate lastDayOfMonth ){
+    private void createCusBillingObject(@NotNull Billing billing, LocalDate firstDayOfNextMonth, LocalDate lastDayOfMonth , String chargeId){
         ContentBilling contentBilling = ContentBilling.builder()
                 .nameClient(billing.getUser().getName())
                 .packageInternetId(billing.getService().getInternetPackage().getId())
@@ -176,6 +175,7 @@ public class BillingService {
                 .idClient(billing.getUser().getId())
                 .billingNtp(billing)
                 .numberPhoneClient(billing.getUser().getMobilePhoneNumber())
+                .chargeId(chargeId)
                 .build();
 
         contentBillingRepository.save(contentBilling);
@@ -210,18 +210,18 @@ public class BillingService {
                     contentBilling1.setPaymentType(typePay);
                     contentBilling1.setPay(true);
 
-                    createBilling(contentBilling1);
+                    createBilling(contentBilling1,charge.getId());
 
                     messengerService.TypeOfSituation(contentBilling1.getBillingNtp(),3);
                 }
             }
         }
     }
-    private void createBilling(@NotNull ContentBilling contentBilling){
+    private void createBilling(@NotNull ContentBilling contentBilling, String chargeId){
         LocalDate newFirstDayOfNextMonth =contentBilling.getBillingInit().plusMonths(contentBilling.getBillingNtp().getCutoff_date()).withDayOfMonth(contentBilling.getBillingNtp().getCutoff_date());
         LocalDate newLastDayOfMonth = newFirstDayOfNextMonth.withDayOfMonth(newFirstDayOfNextMonth.lengthOfMonth());
 
-        createCusBillingObject(contentBilling.getBillingNtp(),newFirstDayOfNextMonth,newLastDayOfMonth);
+        createCusBillingObject(contentBilling.getBillingNtp(),newFirstDayOfNextMonth,newLastDayOfMonth,chargeId);
     }
     //Method that verifies invoices and sends messages if it is the invoice creation day
     public void checkBillingAndSendMessages(){
@@ -277,6 +277,7 @@ public class BillingService {
     private ContentBillingResponse mapToContentBillingsResponse(@NotNull ContentBilling contentBilling) {
         return ContentBillingResponse.builder()
                 .id(contentBilling.getId())
+                .nameClient(contentBilling.getNameClient())
                 .packageInternetId(contentBilling.getPackageInternetId())
                 .idBilling(contentBilling.getIdBilling())
                 .price(contentBilling.getPrice())
@@ -292,6 +293,7 @@ public class BillingService {
                 .typePay(contentBilling.getTypePay())
                 .idClient(contentBilling.getIdClient())
                 .numberPhoneClient(contentBilling.getNumberPhoneClient())
+                .chargeId(contentBilling.getChargeId())
                 .build();
     }
 

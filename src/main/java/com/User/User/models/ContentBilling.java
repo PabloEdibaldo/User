@@ -36,6 +36,7 @@ public class ContentBilling {
     private Long idClient;
     private String numberPhoneClient;
 
+    private String chargeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "billingNtp_id")

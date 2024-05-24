@@ -306,8 +306,8 @@ class ServiceController{
 
     @PostMapping("/ingresar/puerto/cliente")
     @ResponseStatus(HttpStatus.OK)
-    public Mono<Boolean> postPort(String name, long idNap, int port){
-        return connectionMtrServicePPPoE.postPort(name, idNap, port);
+    public Mono<Boolean> postPort(String name, long idNap, int port,Long idClient){
+        return connectionMtrServicePPPoE.postPort(name, idNap, port,idClient);
     }
 }
 @Getter

@@ -33,4 +33,6 @@ public class ContentBillingResponse {
     private Long idClient;
     private String numberPhoneClient;
     private Billing billingNtp;
+
+    private String chargeId;
 }

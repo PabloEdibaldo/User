@@ -27,12 +27,13 @@ public class ConnectionMtrServicePPPoE {
                 .bodyToMono(Boolean.class);
     }
     //assign the port on the box a client
-    public Mono<Boolean> postPort(String nameUser, Long idNap, int port){
+    public Mono<Boolean> postPort(String nameUser, Long idNap, int port,Long idClient){
         // Create a map of parameters
         Map<String, Object> params = new HashMap<>();
         params.put("boxNap", idNap);
         params.put("portNumber", port);
         params.put("nameClient", nameUser);
+        params.put("idClient",idClient);
 
 
         return webClient.post()
