@@ -137,6 +137,7 @@ public class UserService {
 
                 .idService(service.get().getId())
                 //----------------------------------------
+
                 .build();
     }
 

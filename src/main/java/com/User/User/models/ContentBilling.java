@@ -38,6 +38,9 @@ public class ContentBilling {
 
     private String chargeId;
 
+    private boolean serviceCut;
+
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "billingNtp_id")
     private Billing billingNtp;

@@ -36,8 +36,6 @@ public class BillingService {
     private final ConnectionMtrServiceDHCP connectionMtrServiceDHCP;
     private final ConnectionMtrServicePPPoE connectionMtrServicePPPoE;
 
-
-
     //return invoice list
     public List<BillingResponse> getAllBilling() {
         List<Billing> billings = billingRepository.findAll();
@@ -190,6 +188,7 @@ public class BillingService {
                 .toList();
 
         updateBilling(charge,typePay,contentBillingPay);
+
     }
 
     private void updateBilling(Charge charge, String typePay, @NotNull List<ContentBilling> contentBillingPay){
@@ -213,10 +212,18 @@ public class BillingService {
                     createBilling(contentBilling1,charge.getId());
 
                     messengerService.TypeOfSituation(contentBilling1.getBillingNtp(),3);
+                    
+                    if(contentBilling1.isServiceCut()){
+                        reactiveService(contentBilling1);
+                    }
+
                 }
             }
         }
     }
+
+
+
     private void createBilling(@NotNull ContentBilling contentBilling, String chargeId){
         LocalDate newFirstDayOfNextMonth =contentBilling.getBillingInit().plusMonths(contentBilling.getBillingNtp().getCutoff_date()).withDayOfMonth(contentBilling.getBillingNtp().getCutoff_date());
         LocalDate newLastDayOfMonth = newFirstDayOfNextMonth.withDayOfMonth(newFirstDayOfNextMonth.lengthOfMonth());
@@ -260,7 +267,30 @@ public class BillingService {
             connectionMtrServiceDHCP.PostActionDHCP("http://localhost:8081/api/QueriesFromOtherMicroservicesDHCP/cutServiceClientDHCP/",ObjectServiceCutDCHP);
 
         }
+        contentBilling.setServiceCut(true);
+        contentBillingRepository.save(contentBilling);
 
+    }
+    private void reactiveService(ContentBilling contentBilling) {
+        if (contentBilling.getBillingNtp().getService().equals("PPPoE")) {
+            Map<String, Object> ObjectServiceReactivationPPPoE = new HashMap<>();
+
+            ObjectServiceReactivationPPPoE.put("remoteAddress", contentBilling.getBillingNtp().getService().getIp_admin());
+            ObjectServiceReactivationPPPoE.put("idRouter", contentBilling.getBillingNtp().getService().getIdRouter());
+            connectionMtrServicePPPoE.PostActionPPPoE("http://localhost:8081/api/QueriesFromOtherMicroservices/reactivateServiceClientPPPoE/", ObjectServiceReactivationPPPoE);
+
+        } else if (contentBilling.getBillingNtp().getService().equals("DHCP")) {
+            Map<String, Object> ObjectServiceReactivationDHCP = new HashMap<>();
+
+            ObjectServiceReactivationDHCP.put("macAddress", contentBilling.getBillingNtp().getService().getMac());
+            ObjectServiceReactivationDHCP.put("idRouter", contentBilling.getBillingNtp().getService().getIdRouter());
+            ObjectServiceReactivationDHCP.put("nameClientDHCP", contentBilling.getNameClient());
+
+            connectionMtrServiceDHCP.PostActionDHCP("http://localhost:8081/api/QueriesFromOtherMicroservicesDHCP/reactivateServiceClientDHCP/", ObjectServiceReactivationDHCP);
+
+        }
+        contentBilling.setServiceCut(false);
+        contentBillingRepository.save(contentBilling);
     }
 
     public List<ContentBillingResponse> consultingBillingId(Long idUser){
@@ -297,10 +327,9 @@ public class BillingService {
                 .build();
     }
 
-
-
-
-
+    public List<ContentBilling> getContentBillingByIdBilling(Long idBilling){
+        return contentBillingRepository.findByIdContentBilling(idBilling);
+    }
 }
 
 

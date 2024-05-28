@@ -52,8 +52,6 @@ public class MessengerService {
                 String cutService= "su servicio sera cortado";
                 log.info(cutService);
                 break;
-
-
         }
     }
 

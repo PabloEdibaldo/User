@@ -42,4 +42,8 @@ public class UserViewResponse {
 
     private Long promotion;
     private String creationDayTrue;
+
+    //------------------------------------
+
 }
+

@@ -12,6 +12,7 @@ import com.User.User.dto.dtoUsers.MacUserAssignRequest;
 import com.User.User.dto.dtoUsers.UserRequest;
 import com.User.User.dto.dtoUsers.UserResponse;
 import com.User.User.dto.dtoUsers.UserViewResponse;
+import com.User.User.models.ContentBilling;
 import com.User.User.repository.BillingRepository;
 import com.User.User.repository.ServiceRepository;
 import com.User.User.repository.UserRepository;
@@ -214,7 +215,7 @@ class BillingController{
             String address = serviceRepository.findById(serviceId).get().getIp_admin();
             Long idRouter = serviceRepository.findById(serviceId).get().getIdRouter();
             String password = serviceRepository.findById(serviceId).get().getPassword();
-            String macAddress = serviceRepository.findById(serviceId).get().getMac();
+
             //type server
             String typeServer = billingRepository.findById(serviceId).get().getType_service();
 
@@ -260,6 +261,11 @@ class BillingController{
     public List<ContentBillingResponse> getContentBilling(@PathVariable Long id){
         log.info("id:{}",id);
         return billingService.consultingBillingId(id);
+    }
+
+    @GetMapping("/contentBilling/{idBilling}")
+    public List<ContentBilling> getContentBillingByIdBilling(@PathVariable Long idBilling) {
+        return billingService.getContentBillingByIdBilling(idBilling);
     }
 }
 
