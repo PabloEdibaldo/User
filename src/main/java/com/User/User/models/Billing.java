@@ -50,5 +50,6 @@ public class Billing {
         creationDay = LocalDate.now();
     }
     @OneToMany(mappedBy = "billingNtp", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<ContentBilling> contentBillings = new ArrayList<>();
 }

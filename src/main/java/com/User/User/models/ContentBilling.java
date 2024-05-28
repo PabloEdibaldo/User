@@ -43,6 +43,7 @@ public class ContentBilling {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "billingNtp_id")
+    @JsonBackReference
     private Billing billingNtp;
 
 }
