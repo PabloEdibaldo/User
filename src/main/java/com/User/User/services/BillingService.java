@@ -328,7 +328,7 @@ public class BillingService {
     }
 
     public List<ContentBilling> getContentBillingByIdBilling(Long idBilling){
-        return contentBillingRepository.findByIdContentBilling(idBilling);
+        return contentBillingRepository.findByIdBilling(idBilling);
     }
 }
 

@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ContentBillingRepository extends JpaRepository<ContentBilling,Long> {
 
-    List<ContentBilling> findByIdContentBilling(Long IdContentBilling);
+    List<ContentBilling> findByIdBilling(Long idBilling);
 }
