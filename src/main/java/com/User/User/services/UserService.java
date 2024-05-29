@@ -137,9 +137,11 @@ public class UserService {
         return billings.stream().map(this::mapToUserResponseN).toList();
     }
     public Object getUserConfigured(Long idBilling){
+
         Billing billing = billingRepository.findById(idBilling).orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + idBilling));
+        String nameGenerate = String.format("%010d",billing.getUser().getId());
         return UserViewConfigSwitchResponse.builder()
-                .idUser(billing.getUser().getId())
+                .idUser(nameGenerate)
                 .name(billing.getUser().getName())
                 .password(billing.getService().getPassword())
                 .modeConfigOnu(billing.getType_service())
