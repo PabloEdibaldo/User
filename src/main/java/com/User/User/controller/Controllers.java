@@ -104,6 +104,14 @@ class UserController{
     }
 
 
+    @GetMapping("getUserConfigured/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Object getUserConfigured(@PathVariable Long id){
+        return userService.getUserConfigured(id);
+    }
+
+    //getUserConfigured
+
     /*
       @DeleteMapping("/deleteUser/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

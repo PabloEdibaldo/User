@@ -1,14 +1,12 @@
 package com.User.User.services;
-import com.User.User.dto.dtoUsers.MacUserAssignRequest;
-import com.User.User.dto.dtoUsers.UserRequest;
-import com.User.User.dto.dtoUsers.UserResponse;
-import com.User.User.dto.dtoUsers.UserViewResponse;
+import com.User.User.dto.dtoUsers.*;
 import com.User.User.models.Billing;
 import com.User.User.models.Servers;
 import com.User.User.models.User;
 import com.User.User.repository.*;
 import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrServiceDHCP;
 import com.User.User.services.ConfifConnectionDHCPandPPPoE.ConnectionMtrServicePPPoE;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -113,37 +111,39 @@ public class UserService {
 
         return UserViewResponse.builder()
                 .id(billing.getId())
-
                 .type_service(billing.getType_service())
-
                 .reconnection(billing.getReconnection())
                 .creationDay(billing.getCreationDay())
-
                 .promotion(billing.getPromotion())
                 .creationDayTrue(billing.getCreationDayTrue())
-
                 //-------------------------------------
                 .idClient(user.get().getId())
                 .nameClient(user.get().getName())
                 .direction(user.get().getMainDirection())
                 //---------------------------------------
-
                 .password(service.get().getPassword())
                 .box(service.get().getCaja_nap())
                 .port(service.get().getPort_nap())
                 .nameRouter(service.get().getRouter())
                 .ip(service.get().getIp_admin())
                 .namePackage(service.get().getInternetPackage().getName())
-
                 .idService(service.get().getId())
                 //----------------------------------------
-
                 .build();
     }
 
     public List<UserViewResponse> getAllUsersConfigured() {
         List<Billing> billings = billingRepository.findAll();
         return billings.stream().map(this::mapToUserResponseN).toList();
+    }
+    public Object getUserConfigured(Long idBilling){
+        Billing billing = billingRepository.findById(idBilling).orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + idBilling));
+        return UserViewConfigSwitchResponse.builder()
+                .idUser(billing.getUser().getId())
+                .name(billing.getUser().getName())
+                .password(billing.getService().getPassword())
+                .modeConfigOnu(billing.getType_service())
+                .build();
     }
 
     public Object createClientDHCP(MacUserAssignRequest macUserAssign) {
