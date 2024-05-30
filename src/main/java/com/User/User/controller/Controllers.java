@@ -108,7 +108,7 @@ class UserController{
     }
 
 
-    @GetMapping("/consultClientCoordinates")
+    @GetMapping("consultClientCoordinates/")
     public List<ConsultClientCoordinatesResponse> consultClientCoordinates() {
         return userService.consultClientCoordinates();
     }
