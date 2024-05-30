@@ -196,7 +196,7 @@ public class UserService {
                             .coordinatesX(coordinateX)
                             .coordinatesY(coordinateY)
                             .packageInternet(billing.getService().getInternetPackage().getName())
-                            .nameClient(billing.getUser().getLocation()).build();
+                            .nameClient(billing.getUser().getName()).build();
                 }).collect(Collectors.toList());
     }
 }
