@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -177,23 +178,28 @@ public class UserService {
 
     }
 
+
+
+
+
+    public  List<ConsultClientCoordinatesResponse> consultClientCoordinates() {
+        List<Billing> billings = billingRepository.findAll();
+
+        return billings.stream()
+                .map(billing -> {
+                    String[] coordinates = billing.getUser().getLocation().split(", ");
+                    String coordinateX = coordinates.length> 0 ? coordinates[0] : "";
+                    String coordinateY = coordinates.length> 1 ? coordinates[1] : "";
+
+                    return ConsultClientCoordinatesResponse.builder()
+
+                            .coordinatesX(coordinateX)
+                            .coordinatesY(coordinateY)
+                            .packageInternet(billing.getService().getInternetPackage().getName())
+                            .nameClient(billing.getUser().getLocation()).build();
+                }).collect(Collectors.toList());
+    }
 }
-
-
-
-
-
-
-//  public static void kldfj(){
-//            Map<String, Object> promotionData = new HashMap<>();
-//
-//            promotionData.put("userName", nameClient);
-//            promotionData.put("address", service.get().getIp_admin());
-//            promotionData.put("idRouter", service.get().getIdRouter());
-//            promotionData.put("macAddress", MAC);
-//            connectionMtrServiceDHCP.PostActionDHCP("http://localhost:8081/api/QueriesFromOtherMicroservicesDHCP/createProfileDHCP/", promotionData);
-//
-//        }
 
 
 

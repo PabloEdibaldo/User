@@ -8,10 +8,7 @@ import com.User.User.dto.dtoPromotions.PromotionRequest;
 import com.User.User.dto.dtoPromotions.PromotionResponse;
 import com.User.User.dto.dtoServices.ServicesRequest;
 import com.User.User.dto.dtoServices.ServicesResponse;
-import com.User.User.dto.dtoUsers.MacUserAssignRequest;
-import com.User.User.dto.dtoUsers.UserRequest;
-import com.User.User.dto.dtoUsers.UserResponse;
-import com.User.User.dto.dtoUsers.UserViewResponse;
+import com.User.User.dto.dtoUsers.*;
 import com.User.User.models.ContentBilling;
 import com.User.User.repository.BillingRepository;
 import com.User.User.repository.ServiceRepository;
@@ -110,6 +107,11 @@ class UserController{
         return userService.getUserConfigured(id);
     }
 
+
+    @GetMapping("/consultClientCoordinates")
+    public List<ConsultClientCoordinatesResponse> consultClientCoordinates() {
+        return userService.consultClientCoordinates();
+    }
     //getUserConfigured
 
     /*
