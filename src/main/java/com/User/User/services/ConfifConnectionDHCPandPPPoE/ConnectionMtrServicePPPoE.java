@@ -44,38 +44,57 @@ public class ConnectionMtrServicePPPoE {
                 .onStatus(HttpStatusCode::is5xxServerError, response -> Mono.error(new RuntimeException("Error server API" + response.statusCode())))
                 .bodyToMono(Boolean.class);
        }
-    public Mono<Boolean> postIp(String nameUser, Long redIpv4, String ip){
-        // Create a map of parameters
-        Map<String, Object> params = new HashMap<>();
-        params.put("userName", nameUser);
-        params.put("redIpv4", redIpv4);
-        params.put("ip", ip);
 
-
-        return webClient.post()
-                .uri("http://localhost:8081/api/box/userAssignedPort/")
-                .bodyValue(params)
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.error(new RuntimeException("Error querying router" + response.statusCode())))
-                .onStatus(HttpStatusCode::is5xxServerError, response -> Mono.error(new RuntimeException("Error server API" + response.statusCode())))
-                .bodyToMono(Boolean.class);
-    }
        //edit port for de client == delete client
-       public Mono<Boolean> editPort(String name, Long idBox  ){
-            log.info("name:{} id Box:{}",name,idBox);
+       public Mono<Boolean> editPort(String name, Long idRedIpv4  ){
+
             Map<String,Object> nameUser = new HashMap<>();
             nameUser.put("nameUser",name);
-            nameUser.put("idNap",idBox);
-            log.info("idBox:{}",idBox);
+            nameUser.put("idNap",idRedIpv4);
+
 
            return webClient.post()
-                   .uri("http://localhost:8081/api/box/EditPortNap/")
+                   .uri("http://localhost:8081/api/redIpv4/editIpClient/")
                    .bodyValue(nameUser)
                    .retrieve()
                    .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.error(new RuntimeException("Error querying router" + response.statusCode())))
                    .onStatus(HttpStatusCode::is5xxServerError, response -> Mono.error(new RuntimeException("Error server API" + response.statusCode())))
                    .bodyToMono(Boolean.class);
        }
+
+    public Mono<Boolean> postIp(String nameUser, Long redIpv4, String ip){
+        // Create a map of parameters
+        Map<String, Object> params = new HashMap<>();
+        params.put("userName", nameUser);
+        params.put("idRedIpv4", redIpv4);
+        params.put("ip", ip);
+
+
+        return webClient.post()
+                .uri("http://localhost:8081/api/redIpv4/putIps/")
+                .bodyValue(params)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.error(new RuntimeException("Error querying router" + response.statusCode())))
+                .onStatus(HttpStatusCode::is5xxServerError, response -> Mono.error(new RuntimeException("Error server API" + response.statusCode())))
+                .bodyToMono(Boolean.class);
+    }
+
+
+    public Mono<Boolean> editIp(String name, Long idBox  ){
+        log.info("name:{} id Box:{}",name,idBox);
+        Map<String,Object> nameUser = new HashMap<>();
+        nameUser.put("userName",name);
+        nameUser.put("idRedIpv4",idBox);
+
+
+        return webClient.post()
+                .uri("http://localhost:8081/api/redIpv4/editIpClient/")
+                .bodyValue(nameUser)
+                .retrieve()
+                .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.error(new RuntimeException("Error querying router" + response.statusCode())))
+                .onStatus(HttpStatusCode::is5xxServerError, response -> Mono.error(new RuntimeException("Error server API" + response.statusCode())))
+                .bodyToMono(Boolean.class);
+    }
 
        //--------------------------------------------------------------POST CREATE PROMOTION------------------------------------------------------
 /*    public Mono<Object> createPromotion(@NotNull Promotion promotion){

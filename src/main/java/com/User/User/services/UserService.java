@@ -26,7 +26,6 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final ConnectionMtrServicePPPoE connectionMtrServicePPPoE;
-    private final InternetRepository internetRepository;
     private final ConnectionMtrServiceDHCP connectionMtrServiceDHCP;
     private final BillingRepository billingRepository;
     private final ServiceRepository serviceRepository;
@@ -91,10 +90,12 @@ public class UserService {
 
             for (Billing billing : billings) {
                 Mono<Boolean> editPort = connectionMtrServicePPPoE.editPort(user.getName(), billing.getService().getCaja_nap());
-                log.info("billing print1: {}", editPort);
                 Boolean resultEditPort = editPort.onErrorReturn(false).block();
-                log.info("billing print2: {}", resultEditPort);
-                if (Boolean.TRUE.equals(resultEditPort)) {
+
+                Mono<Boolean> editIp = connectionMtrServicePPPoE.editIp(user.getName(), billing.getService().getType_Ipv4());
+                Boolean resultEditIp = editIp.onErrorReturn(false).block();
+
+                if (Boolean.TRUE.equals(resultEditPort && Boolean.TRUE.equals(resultEditIp))) {
                     userRepository.deleteById(id);
                     log.warn("User with ID {} deleted successfully", id);
                 }
