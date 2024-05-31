@@ -50,6 +50,7 @@ public class MessengerService {
                     .replace("{serviceName}", service.getInternetPackage().getName())
                     .replace("{paymentLink}", service.getInternetPackage().getLink())
                     .replace("{currentDate}", LocalDate.now().toString());
+            log.info("Message Twilio:{}" ,messageTwilio);
 
             //postMessage(message, user.getMobilePhoneNumber());
         }

@@ -333,8 +333,10 @@ class StripeWebhooks{
 
 }
 
+
 @Slf4j
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/messages")
 class MessageTemplateController{
 
