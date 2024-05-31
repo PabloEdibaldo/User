@@ -1,59 +1,60 @@
 package com.User.User.services;
 
-import com.User.User.models.Billing;
-import com.User.User.models.Servers;
-import com.User.User.models.User;
+import com.User.User.dto.dtoPromotions.PromotionResponse;
+import com.User.User.models.*;
+import com.User.User.repository.MessageRepository;
 import com.twilio.rest.api.v2010.account.Message;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class MessengerService {
+    @Autowired
+    private final MessageRepository messageRepository;
+
+    public List<MessageTwilio> findAll(){
+        return messageRepository.findAll();
+    }
+    public Optional<MessageTwilio> findById(Long id){
+        return messageRepository.findById(id);
+    }
+    public MessageTwilio save(MessageTwilio messageTwilio){
+        return messageRepository.save(messageTwilio);
+    }
+    public void deleteById(Long id){
+        messageRepository.deleteById(id);
+    }
 
 
-    public void TypeOfSituation(Billing billing, int caseMessage){
+
+    public void TypeOfSituation(Billing billing, int caseMessage) {
         User user = billing.getUser();
         Servers service = billing.getService();
-        log.info("servicio:{}",service);
 
-        switch (caseMessage){
-            case 1:
-                String requestBodyWelcome = "*¡Bienvenido a SOLIT!*" +
-                        "\n"+" *Hola "+user.getName()+"* " +
-                        "\n"+"¡Nos emociona tenerte como parte de nuestra comunidad!" +
-                        "Esperamos que disfrutes de tu conexión a Internet con nosotros. Si tienes alguna pregunta o " +
-                        "ecesitas asistencia, no dudes en ponerte en contacto con nuestro equipo de soporte." +
-                        "Saludos cordiales," +
-                        "\n"+" SOLIT";
-                log.info(requestBodyWelcome);
-                //postMessage(requestBodyWelcome, user.getMobilePhoneNumber());
+        MessageTwilio messageTemplate = messageRepository.findByCaseMessage(caseMessage);
 
-                break;
-            case 2:
-                String requestBodyPayDayReminder = "* Solit  le recuerda su pago*" +
-                        "\n"+
-                        LocalDate.now() +
-                        "Estimado cliente"+user.getName()+
-                        "Estimado cliente, le recordamos que su servicio esta a vencer: "+service.getInternetPackage().getName() +
-                        "Link de pago: "+ service.getInternetPackage().getLink();
-                log.info(requestBodyPayDayReminder);
 
-                //postMessage(requestBodyPayDayReminder);
-                break;
-            case 3:
-                String paymentThanks = "gracias por su pago";
-                log.info(paymentThanks);
-                break;
-            case 4:
-                String cutService= "su servicio sera cortado";
-                log.info(cutService);
-                break;
+        if (messageTemplate != null) {
+            String messageTwilio = messageTemplate.getMessageTemplate()
+                    .replace("{userName}", user.getName())
+                    .replace("{serviceName}", service.getInternetPackage().getName())
+                    .replace("{paymentLink}", service.getInternetPackage().getLink())
+                    .replace("{currentDate}", LocalDate.now().toString());
+
+            //postMessage(message, user.getMobilePhoneNumber());
         }
     }
+}
 
 //    private void postMessage(String requestBody,String number){
 //
@@ -70,4 +71,4 @@ public class MessengerService {
 //            System.out.println(message.getSid());
 //
 //    }
-}
+

@@ -10,6 +10,7 @@ import com.User.User.dto.dtoServices.ServicesRequest;
 import com.User.User.dto.dtoServices.ServicesResponse;
 import com.User.User.dto.dtoUsers.*;
 import com.User.User.models.ContentBilling;
+import com.User.User.models.MessageTwilio;
 import com.User.User.repository.BillingRepository;
 import com.User.User.repository.ServiceRepository;
 import com.User.User.repository.UserRepository;
@@ -29,6 +30,7 @@ import reactor.core.publisher.Mono;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
@@ -138,22 +140,8 @@ class UserController{
     * */
 
 
-//-----------------------------------------------------------------------------------------------------------------
-  /*
 
-    @PostMapping("/assign-package/{userId}/{internetId}")
-    public  ResponseEntity<String>assignInternetPackage(@PathVariable Long userId, @PathVariable Long internetId){
-       return userService.assignInternetPackage(userId,internetId);
-    }
-
-    @PostMapping("/assign-promotion/{userId}/{promotionId}/{time}")
-    public ResponseEntity<String> assignPromotion(@PathVariable Long userId, @PathVariable Long promotionId, @PathVariable int time){
-        return userService.assignPromotion(userId,promotionId,time);
-    }
-
-   */
 }
-
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @RestController
@@ -184,8 +172,6 @@ class PromotionController{
     }
 
 }
-
-
 @CrossOrigin(origins = "*")
 @Slf4j
 @RequiredArgsConstructor
@@ -278,11 +264,6 @@ class BillingController{
         return billingService.getContentBillingByIdBilling(idBilling);
     }
 }
-
-
-
-
-
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @RestController
@@ -349,5 +330,56 @@ class StripeWebhooks{
 
         return webhook.handleWebhookEvent(payload,sigHeader);
     }
+
+}
+
+@Slf4j
+@RestController
+@RequestMapping("/api/messages")
+class MessageTemplateController{
+
+    @Autowired
+    private MessengerService messengerService;
+
+    @GetMapping
+    public List<MessageTwilio> getAllMessages(){
+        return messengerService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<MessageTwilio> getMessageById(@PathVariable Long id){
+        Optional<MessageTwilio> messageTwilio = messengerService.findById(id);
+        if(messageTwilio.isPresent()){
+            return ResponseEntity.ok(messageTwilio.get());
+        }else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping
+    public MessageTwilio createMessage(@RequestBody MessageTwilio messageTwilio){
+        return messengerService.save(messageTwilio);
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<MessageTwilio> updateMessage(@PathVariable Long id, @RequestBody MessageTwilio messageTwilio){
+        if(messengerService.findById(id).isPresent()){
+            messageTwilio.setId(id);
+            return  ResponseEntity.ok(messengerService.save(messageTwilio));
+        }else{
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMessage(@PathVariable Long id){
+        if(messengerService.findById(id).isPresent()){
+            messengerService.deleteById(id);
+            return ResponseEntity.ok().build();
+        }else{
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
 
 }
