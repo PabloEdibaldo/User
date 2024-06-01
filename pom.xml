@@ -15,7 +15,7 @@
 	<name>User</name>
 	<description>Admin User</description>
 	<properties>
-		<java.version>21</java.version>
+		<java.version>${java.version}</java.version>
 	</properties>
 	<dependencies>
 
