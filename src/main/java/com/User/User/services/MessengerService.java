@@ -3,6 +3,7 @@ package com.User.User.services;
 import com.User.User.dto.dtoPromotions.PromotionResponse;
 import com.User.User.models.*;
 import com.User.User.repository.MessageRepository;
+import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -52,24 +53,24 @@ public class MessengerService {
                     .replace("{currentDate}", LocalDate.now().toString());
             log.info("Message Twilio:{}" ,messageTwilio);
 
-            //postMessage(message, user.getMobilePhoneNumber());
+            postMessage(messageTwilio, user.getMobilePhoneNumber());
         }
     }
+    private void postMessage(String requestBody,String number){
+
+        String TWILIO_ACCOUNT_SID = System.getenv("TWILIO_ACCOUNT_SID");
+        String TWILIO_TOKEN = System.getenv("TWILIO_TOKEN");
+
+        Twilio.init(TWILIO_ACCOUNT_SID,TWILIO_TOKEN);
+        Message message = Message.creator(
+                new com.twilio.type.PhoneNumber("whatsapp:+521"+number),
+                new com.twilio.type.PhoneNumber("whatsapp:+14155238886"),
+                requestBody).create();
+
+        System.out.println(message.getSid());
+    }
+
 }
 
-//    private void postMessage(String requestBody,String number){
-//
-//
-//
-//
-//
-//            //Twilio.init(, AUTH_TOKEN);
-//            Message message = Message.creator(
-//                    new com.twilio.type.PhoneNumber("whatsapp:+521"+number),
-//                    new com.twilio.type.PhoneNumber("whatsapp:+14155238886"),
-//                    requestBody).create();
-//
-//            System.out.println(message.getSid());
-//
-//    }
+
 
