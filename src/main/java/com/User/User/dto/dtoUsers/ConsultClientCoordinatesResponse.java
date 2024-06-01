@@ -13,4 +13,7 @@ public class ConsultClientCoordinatesResponse {
     private String coordinatesX;
     private String coordinatesY;
     private String packageInternet;
+    private String location;
+    private String ip;
+    private String phoneNumber;
 }
