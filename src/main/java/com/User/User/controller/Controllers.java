@@ -10,6 +10,7 @@ import com.User.User.dto.dtoServices.ServicesRequest;
 import com.User.User.dto.dtoServices.ServicesResponse;
 import com.User.User.dto.dtoUsers.*;
 import com.User.User.models.ContentBilling;
+import com.User.User.models.GeneralAdjustments.ConfigEm;
 import com.User.User.models.MessageTwilio;
 import com.User.User.repository.BillingRepository;
 import com.User.User.repository.ServiceRepository;
@@ -23,10 +24,14 @@ import jakarta.transaction.Transactional;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -381,6 +386,77 @@ class MessageTemplateController{
             return ResponseEntity.notFound().build();
         }
     }
+
+
+    @Slf4j
+    @RestController
+    @CrossOrigin(origins = "*")
+    @RequestMapping("/api/messages")
+
+    public class CompanyController {
+
+        @Autowired
+        private GeneralAdjustmentsServices generalAdjustmentsServices;
+
+        // POST: Crear una nueva compañía y subir un logo
+        @PostMapping("/uploadLogo")
+        public ResponseEntity<String> uploadLogo(@RequestParam("nameCompany") String nameCompany,
+                                                 @RequestParam("address") String address,
+                                                 @RequestParam("phone") String phone,
+                                                 @RequestParam("idCompany") String idCompany,
+                                                 @RequestParam("gmailBackup") String gmailBackup,
+                                                 @RequestParam("gmailSupport") String gmailSupport,
+                                                 @RequestParam("gmailInvoice") String gmailInvoice,
+                                                 @RequestParam("logo") MultipartFile file) {
+            try {
+                ConfigEm company = ConfigEm.builder()
+                        .nameCompany(nameCompany)
+                        .address(address)
+                        .phone(phone)
+                        .idCompany(idCompany)
+                        .gmailBackup(gmailBackup)
+                        .gmailSupport(gmailSupport)
+                        .gmailInvoice(gmailInvoice)
+                        .logo(file.getBytes())
+                        .build();
+
+                generalAdjustmentsServices.saveConfigEm(company);
+                return new ResponseEntity<>("Company created and logo uploaded successfully", HttpStatus.OK);
+            } catch ( IOException e) {
+                return new ResponseEntity<>("Error uploading logo", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+        // PUT: Actualizar el logo de una compañía por ID
+        @PutMapping("/updateLogo/{id}")
+        public ResponseEntity<String> updateLogo(@PathVariable Long id, @RequestParam("logo") MultipartFile file) {
+            try {
+                Optional<ConfigEm> updatedConfigEm = generalAdjustmentsServices.findById(id).map(configEm -> {
+                    try {
+                        configEm.setLogo(file.getBytes());
+                        return generalAdjustmentsServices.saveConfigEm(configEm);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Error updating logo", e);
+                    }
+                });
+
+                if (updatedConfigEm.isPresent()) {
+                    return new ResponseEntity<>("Logo updated successfully", HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>("Company not found", HttpStatus.NOT_FOUND);
+                }
+            } catch (IOException e) {
+                return new ResponseEntity<>("Error updating logo", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+        // GET: Obtener todas las configuraciones
+        @GetMapping("/all")
+        public List<ConfigEm> findAll() {
+            return generalAdjustmentsServices.findAll();
+        }
+
+    }
+
+
 
 
 
